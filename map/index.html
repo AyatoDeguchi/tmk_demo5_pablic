@@ -1,0 +1,634 @@
+﻿<?php
+  include 'db_config.php';
+  include 'db_get.php';
+?>
+<!DOCTYPE html>
+<html>
+  <head>
+    <?php include "head.php"; ?>
+    <script src="//maps.googleapis.com/maps/api/js?key=APIキー"></script>
+    <script>
+
+    var db_text_log = window.localStorage.getItem("help_text_log");
+    var help_text_log;
+
+    if(db_text_log == null){
+    help_text_log = "";
+    }else{
+    help_text_log = db_text_log;
+    }
+
+    function font_size(){
+      //window_show.innerHTML='a:'+'　h'+main_height+'　w'+main_width;
+      //cmd
+      if(900 <= main_width && main_width < 1100){
+        $('#cmd').css('font-size', 28+'px');$('#cmd').css('line-height', 60+'px');
+      }
+      else if(850 <= main_width && main_width < 900){
+        $('#cmd').css('font-size', 22+'px');$('#cmd').css('line-height', 47+'px');
+      }
+      else if(650 <= main_width && main_width < 850){
+        $('#cmd').css('font-size', 18+'px');$('#cmd').css('line-height', 38+'px');
+      }
+      else if(500 <= main_width && main_width < 650){
+        $('#cmd').css('font-size', 12+'px');$('#cmd').css('line-height', 25+'px');
+      }
+      else if(main_width < 500){
+        $('#cmd').css('font-size', 8+'px');$('#cmd').css('line-height', 20+'px');
+      }
+      else if(1100 <= main_width){
+        $('#cmd').css('font-size', 32+'px');$('#cmd').css('line-height', 68+'px');
+      }
+    }
+    </script>
+    <script src="js/message_view.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="css/foot.css" type="text/css" media="all">
+    <style>
+      #gmap {
+        width: 100% ;
+        height: 100% ;
+      }
+      #cmd {
+        /* ▼表示位置を画面の右下に固定 */
+        position: absolute; /* ←表示場所を固定 */
+        top: 5%;   /* ←下端からの距離 */
+      /*  top: 446px;*/
+        /*right: 200px;*/    /* ←右端からの距離 */
+        left: 5%;
+        background-color:black;
+        opacity: 1;             /* ←透明度 */
+        padding: 4px;
+        /*padding-right: 80px;*/
+        width: auto;
+        color: #fff;
+        height: auto;
+        line-height: 60px;
+        text-align: left;
+        display: inline-block;
+        border-radius: 2%;
+        font-size: 28px;
+        border: 5px solid #fff
+      }
+      .image{
+      position: absolute;
+      width: 86%;
+      height: 96%;
+      left:10%;
+        display: block;
+         margin: 0 auto;
+         margin-left: auto;/*これでもOK*/
+         margin-right: auto;/*これでもOK*/
+      }
+      #data_img{
+        display: none;
+      }
+      .side-menu{
+        color:#fff;
+        font-family:"PixelMplus12-Regular";
+      }
+    </style>
+    <?php include "../loading.php"; ?>
+  </head>
+  <body class="drawer drawer--right">
+    <?php include "side_nav.php"; ?>
+    <div id="fade"></div>
+    <div class="main" id="main">
+      <div id="loader"><img src="../img/loading.gif" style="width: 100%;"alt="Now Loading..." /></div>
+      <div id="gmap"></div>
+      <div id="cmd" class="boxContainer" style="display:none;">
+        <ul style="list-style: none;padding:0;margin-left:20px;margin-right:20px;"  class="box">
+          <li id="cmd_1">▶</li>
+          <li id="cmd_2">　</li>
+          <li id="cmd_3">　</li>
+          <li id="cmd_4">　</li>
+          <li id="cmd_5">　</li>
+          <li id="cmd_6">　</li>
+        </ul>
+        <ul style="list-style: none;padding:0;margin-right:20px;"  class="box">
+          <li>はなす</li>
+          <li>じんこうのへんかをみる</li>
+          <li>じぶんのステータス</li>
+          <li>しゅじんこうをかえる</li>
+          <li>ゲームをおわる</li>
+          <li>ヘルプ</li>
+        </ul>
+        <ul style="display: none;">
+          <li><a type="button" id="cmd_2_a" href="../pop/index.html?user_id=<?php echo $user_id; ?>&hero_id=<?php echo $hero_id; ?>">「じんこうのへんかをみる」</a></li>
+          <li><a type="button" id="cmd_4_a" href="../syujinkou/index.html?user_id=<?php echo $user_id; ?>">「しゅじんこうをかえる」</a></li>
+          <li><a type="button" id="cmd_5_a" href="../index.html?user_id=<?php echo $user_id; ?>&hero_id=<?php echo $hero_id; ?>">「タイトルにもどる」</a></li>
+        </ul>
+      </div>
+      <div id="mv_none" style="display: none;">
+        <div class="messageView" style="position: absolute;top:0;left:0;width:100%;height:100%;font-size:24px;" id="default">
+            <div class="mv-contents">
+                <p class="mv-name" id="foot_name"></p>
+                <div id="foot" class="mv-comment">
+                    <p class="val"></p>
+                    <p class="pointer"></p>
+                </div>
+                <p id="data_img" class="mv-image character"><img class="image" src="" alt=""/></p>
+            </div>
+        </div>
+      </div>
+
+
+        <?php include "status.php"; ?>
+        <?php include "help.php"; ?>
+        <?php include "level.php"; ?>
+      <?php
+        require_once 'useragent/ua.class.php';
+        $ua = new UserAgent();
+        if($ua->set() === "mobile") {
+          include 'useragent/mobile_button.php';
+        }elseif($ua->set() === "tablet"){
+          include 'useragent/mobile_button.php';
+        }else{
+          include 'useragent/pc_button.php';
+        }
+      ?>
+      <div style="display: none;">
+        <img src="../img/<?php echo $h_front; ?>">
+        <img src="../img/<?php echo $h_back; ?>">
+        <img src="../img/<?php echo $h_left; ?>">
+        <img src="../img/<?php echo $h_right; ?>">
+      </div>
+    </div>
+    <?php include "../audio.php"; ?>
+    <script type="text/javascript" src="../js/wa.js"></script>
+    <script>
+      var tap = 0;
+      var myAudio = new Audio('');
+      var audio_file_name = 'map';
+
+      audio_play(audio_file_name);
+      ;(function(wa){
+        var event = "click";
+        document.addEventListener(event, function() {
+            if (tap == 0){
+            //無音再生
+            wa.playSilent();
+            audio_play(audio_file_name);
+            setTimeout(map_loop,89000);
+            tap = 1;
+          }
+        });
+
+      }(wa));
+      function map_loop(){
+        audio_file_name = 'map';
+        audio_play(audio_file_name);
+        setTimeout(map_loop,89000);
+      }
+    //--------------------------------------------------------------サイドメニュー
+      $(document).ready(function() {
+        $('.drawer').drawer();
+      });
+      //--------------------------------------------------------------キーボード
+      // キーボードのフラグ　（1 : 押されている / 0 : 離されている）
+      var left  = 0 ;
+      var up    = 0 ;
+      var right = 0 ;
+      var down  = 0 ;
+      var space = 0 ;
+      var Z_key = 0 ;
+      var X_key = 0 ;
+
+      var pv =  0.00025; // 1回の移動量
+      var position = 0;
+
+      //------------------------------------------------------------村人情報
+      var db_people_name=[],db_people_jp_name=[],db_people_front=[],db_people_left=[],db_people_right=[],db_people_back=[];
+      <?php
+        $i = 0;
+        foreach ($people as $r){
+          echo <<< EOM
+          db_people_name[{$i}] = "{$r['name']}";db_people_jp_name[{$i}] = "{$r['jp_name']}";db_people_front[{$i}] = "{$r['front']}";db_people_left[{$i}] = "{$r['left']}";db_people_right[{$i}] = "{$r['right']}";db_people_back[{$i}] = "{$r['back']}";
+EOM;
+          $i++;
+        }
+      ?>
+      var db_random_spawn_shimotokida_x=[],db_random_spawn_shimotokida_y=[];
+      <?php
+        $i = 0;
+        foreach ($random_spawn_shimotokida as $r){
+          echo <<< EOM
+          db_random_spawn_shimotokida_x[{$i}] = {$r['x']};db_random_spawn_shimotokida_y[{$i}] = {$r['y']};
+EOM;
+          $i++;
+        }
+      ?>
+      //村人との会話がいくつあるか。
+      var db_people_talk_type=[];
+      <?php
+        $i = 0;
+        foreach ($people_talk_type as $r){
+          echo <<< EOM
+          db_people_talk_type[{$i}] = {$r};
+EOM;
+          $i++;
+        }
+      ?>
+      //-----------注意 idは0スタートDBのidより1少ない
+      var shujinko = <?php echo $hero_id;?>;
+      <?php $shujinko = $hero_id; ?>
+      var user = <?php echo $user_id;?>;
+      var nm = 25; //人数
+      var myurl = "../img/people/";
+      var people_y=[],people_x=[];
+      var people_id=[],people_talk_type=[],people_xy=[],people_name=[],people_jp_name=[],people_front=[],people_left=[],people_right=[],people_back=[];
+      for(var i=0;i<nm;i++){
+        //人選
+        people_id[i] = Math.floor( Math.random() * (15 + 1 - 0) ) + 0 ;
+        console.log('people_id'+i+'：'+people_id[i]);
+        people_xy[i] = Math.floor( Math.random() * (27 + 1 - 0) ) + 0 ;
+        console.log('people_xy'+i+'：'+people_xy[i]);
+        people_name[i] = db_people_name[people_id[i]];
+        people_jp_name[i] = db_people_jp_name[people_id[i]];
+        people_front[i] = db_people_front[people_id[i]];
+        people_left[i] = db_people_left[people_id[i]];
+        people_right[i] = db_people_right[people_id[i]];
+        people_back[i] = db_people_back[people_id[i]];
+        people_x[i] = db_random_spawn_shimotokida_x[people_xy[i]];
+        people_y[i] = db_random_spawn_shimotokida_y[people_xy[i]];
+        people_talk_type[i] = Math.floor( Math.random() * (db_people_talk_type[people_id[i]] + 1 - 1) ) + 1 ;
+        console.log('people_talk_type'+i+'：'+people_talk_type[i]);
+      }
+      var n=people_front.length;
+
+      var load=new Array(); for(var p=0; p<n; p++){load[p]=new Image(); load[p].src=myurl+people_front[p];}//画像先読み
+      var load=new Array(); for(var p=0; p<n; p++){load[p]=new Image(); load[p].src=myurl+people_left[p];}//画像先読み
+      var load=new Array(); for(var p=0; p<n; p++){load[p]=new Image(); load[p].src=myurl+people_right[p];}//画像先読み
+      var load=new Array(); for(var p=0; p<n; p++){load[p]=new Image(); load[p].src=myurl+people_back[p];}//画像先読み
+
+
+      //--------------------------------------------------------------murabito
+      //★蝶の画像指定。画像を順番に"●",と区切って、いくつでも並べる。最後の]の前には,(カンマ)無し
+      //var Pic=["drg2.gif","drg3.gif","ok8c.gif"];
+      //var Pic=["ji_f.gif","ba_f.gif","yami_ji_f.gif","yami_ba_f.gif","wo_f.gif","ma_f.gif","bo_f.gif","gi_f.gif"];
+      //var myurl="../../16421/seni/8_map/img/people/"; //★画像パス。文書とは別のフォルダーなどに入っている時は指定。全画像共通部分
+      //var nm=8;    //★画像表示数
+      //var inZ=1;   //★画像や文章の上に浮くなら 1 。下に隠れるなら -1
+      var spd;   //★速度。原本10。数値が大きいほど遅い-----------------未定義
+      //var n=Pic.length;//配列数
+      //var load=new Array(); for(var p=0; p<n; p++){load[p]=new Image(); load[p].src=myurl+Pic[p];}//画像先読み
+      var Y=[],X=[];
+      var D=[],SP=[];
+      var Y_temp,X_temp;
+      //var Y_min=34.4522799, X_min=136.5783598;
+      var murabito_marker=[];
+
+      //--------------------------------------------------------------map
+      //lat：34.47227989999994　lng：136.64235979999958
+      var lat = 34.47227989999994;
+      var lng = 136.64235979999958;
+      var map = new google.maps.Map(
+        document.getElementById("gmap"),{
+          zoom : 16,
+          center : new google.maps.LatLng(lat, lng),
+          mapTypeControl :false,//地図・衛星写真などを切り替えるボタンです
+          zoomControl:false,//地図の拡大・縮小を行う「+」「-」ボタンです。
+          fullscreenControl:false,//マップを全画面モードで表示するためのボタンです。
+          rotateControl:false,//	衛星写真の表示時に斜め45度画像があれば、その向きの制御や回転を行うボタンです
+          scaleControl:false,//地図のスケールです。デフォルトでは非表示です
+          streetViewControl:false,//streetView
+          draggable:false,//false に設定すると、マップの移動をマウスのドラッグできなくなります。
+          disableDoubleClickZoom:true,//true に設定すると、ダブルクリックによるズームができなくなります。
+          keyboardShortcuts:false,//	false に設定すると、マップをキーボートで移動できなくなります。
+          scrollwheel:false,//false に設定すると、マウスホイールでの拡大・縮小ができなくなります。
+          clickableIcons:false//false に設定すると、地図上に表示されている会社やお店などのPOI(Point of Interest)アイコンをクリックできなくなります。
+
+          //mapTypeId: google.maps.MapTypeId.SATELLITE ,
+    	    //tilt: 45 ,
+          //mapTypeId : google.maps.MapTypeId.ROADMAP
+        }
+      );
+      <?php
+        include 'map_style.php';
+      ?>
+      var image = '../img/<?php echo $h_front; ?>';
+      var marker = new google.maps.Marker({
+        position: new google.maps.LatLng(lat, lng),
+        map: map,
+        icon: image
+      });
+      //--------------------------------------------------------------murabito
+      for (var i=0; i<nm; i++){
+        murabito_marker[i] = new google.maps.Marker({
+          position: new google.maps.LatLng(people_y[i], people_x[i]),
+          map: map,
+          //icon : myurl+Pic[i%n]
+          icon : myurl+people_front[i]
+        });
+        Y[i]=people_y[i];
+        X[i]=people_x[i];
+        console.log(myurl+people_front[i]);
+      }
+
+    </script>
+    <?php include 'talk/talk.php'; ?>
+    <?php include 'fun/button_bn.php'; ?>
+    <script>
+      //------------------------------------------------------選択
+      var max=6;
+      var here=1;
+      //lat：34.51802990000016　lng：136.56835980000133
+      //lat：34.48977990000002　lng：136.61560980000021
+      function menu_select(x){
+        if(position==0){
+          intTmrInterval_fun(0);
+          if(x == "up"){
+            var lat_temp = lat + pv;
+            marker.setIcon('../img/<?php echo $h_back; ?>');
+            //if(lng_temp <= 136.68035980000028 && 136.56835979999974 <= lng_temp){
+            if(lng_temp <= 136.68035980000028 && 136.61560980000021 <= lng_temp){
+              lng = lng_temp;
+            }
+            //if(lat_temp <= 34.518279899999925 && 34.45227990000008 <= lat_temp){
+            if(lat_temp <= 34.48977990000002 && 34.45227990000008 <= lat_temp){
+              lat = lat_temp;
+            }
+            moveMarker();	// アニメーション移動開始
+          }else if(x == "down"){
+            var lat_temp = lat - pv;
+            marker.setIcon('../img/<?php echo $h_front; ?>');
+            if(lng_temp <= 136.68035980000028 && 136.61560980000021 <= lng_temp){
+              lng = lng_temp;
+            }
+            if(lat_temp <= 34.48977990000002 && 34.45227990000008 <= lat_temp){
+              lat = lat_temp;
+            }
+            moveMarker();	// アニメーション移動開始
+          }else if(x == "left"){
+            var lng_temp = lng - pv;
+            marker.setIcon('../img/<?php echo $h_left; ?>');
+            if(lng_temp <= 136.68035980000028 && 136.61560980000021 <= lng_temp){
+              lng = lng_temp;
+            }
+            if(lat_temp <= 34.48977990000002 && 34.45227990000008 <= lat_temp){
+              lat = lat_temp;
+            }
+            moveMarker();	// アニメーション移動開始
+          }else if(x == "right"){
+            var lng_temp = lng + pv;
+            marker.setIcon('../img/<?php echo $h_right; ?>');
+            if(lng_temp <= 136.68035980000028 && 136.61560980000021 <= lng_temp){
+              lng = lng_temp;
+            }
+            if(lat_temp <= 34.48977990000002 && 34.45227990000008 <= lat_temp){
+              lat = lat_temp;
+            }
+            moveMarker();	// アニメーション移動開始
+          }else if(x == "ok"){
+            setTimeout('position = 1;', 10);
+            document.getElementById("cmd").style.display = "block";
+          }else if(x == "no"){
+
+          }
+          setTimeout(menu_select,100);
+        }
+        else if(position==1){
+          intTmrInterval_fun(1);
+          if(x == "up"){
+            if(here == 1){here = max+1;}
+            here = here - 1;
+          }else if(x == "down"){
+            if(here == max){here = 0;}
+            here = here + 1;
+          }else if(x == "ok"){
+            var audio_file_name = 'decide';
+            audio_play(audio_file_name);
+            if(here == 1){
+              setTimeout('position = 2;', 10);
+              talk_talk();
+              here = 1;
+            }else if(here == 2){
+              window.localStorage.setItem("help_text_log", help_text_log);
+              document.getElementById("cmd_2_a").click();
+            }else if(here == 3){
+              status();
+              setTimeout('position = 3;', 10);
+              here = 1;
+            }else if(here == 4){
+              document.getElementById("cmd_4_a").click();
+            }else if(here == 5){
+              var parameter = {"user_id": user};
+              exePHPFunc_playtime(parameter).done(function(data_playtime){
+                console.log(data_playtime);
+                document.getElementById("cmd_5_a").click();
+              });
+            }else if(here == 6){
+              help();
+              setTimeout('position = 4;', 10);
+              here = 1;
+            }
+          }else if(x == "no"){
+            setTimeout('position = 0;', 10);
+            here = 1;
+            cmd_1.innerHTML ='▶';
+            cmd_2.innerHTML ='　';
+            cmd_3.innerHTML ='　';
+            cmd_4.innerHTML ='　';
+            cmd_5.innerHTML ='　';
+            cmd_6.innerHTML ='　';
+            document.getElementById("cmd").style.display = "none";
+          }
+          if(here == 1){
+            cmd_1.innerHTML ='▶';
+            cmd_2.innerHTML ='　';
+            cmd_3.innerHTML ='　';
+            cmd_4.innerHTML ='　';
+            cmd_5.innerHTML ='　';
+            cmd_6.innerHTML ='　';
+          }else if(here == 2){
+            cmd_1.innerHTML ='　';
+            cmd_2.innerHTML ='▶';
+            cmd_3.innerHTML ='　';
+            cmd_4.innerHTML ='　';
+            cmd_5.innerHTML ='　';
+            cmd_6.innerHTML ='　';
+          }else if(here == 3){
+            cmd_1.innerHTML ='　';
+            cmd_2.innerHTML ='　';
+            cmd_3.innerHTML ='▶';
+            cmd_4.innerHTML ='　';
+            cmd_5.innerHTML ='　';
+            cmd_6.innerHTML ='　';
+          }else if(here == 4){
+            cmd_1.innerHTML ='　';
+            cmd_2.innerHTML ='　';
+            cmd_3.innerHTML ='　';
+            cmd_4.innerHTML ='▶';
+            cmd_5.innerHTML ='　';
+            cmd_6.innerHTML ='　';
+          }else if(here == 5){
+            cmd_1.innerHTML ='　';
+            cmd_2.innerHTML ='　';
+            cmd_3.innerHTML ='　';
+            cmd_4.innerHTML ='　';
+            cmd_5.innerHTML ='▶';
+            cmd_6.innerHTML ='　';
+          }else if(here == 6){
+            cmd_1.innerHTML ='　';
+            cmd_2.innerHTML ='　';
+            cmd_3.innerHTML ='　';
+            cmd_4.innerHTML ='　';
+            cmd_5.innerHTML ='　';
+            cmd_6.innerHTML ='▶';
+          }
+          setTimeout(menu_select,100);
+        }
+        else if (position == 2) {
+          if(x == "ok"){
+            document.getElementById("foot").click();
+          }
+        }else if (position == 3) {
+          if(x == "ok" || x == "no"){
+            document.getElementById("status").style.display = "none";
+            position = 0;
+          }
+        }else if (position == 4) {
+          if(x == "ok" || x == "no"){
+            position = 0;
+            button_block();
+            document.getElementById("help").style.display = "none";
+            $('#b_btn').css('right', 170+'px');
+            $('#b_btn').css('top', 'auto');
+            $('#b_btn').css('bottom', 18+'px');
+            b_btn.innerHTML = '×';
+            $('#b_btn').css('width', 90+'px');
+            $('#b_btn').css('opacity', 0.75);
+            $('#b_btn').css('font-size', 50+'px');
+          }
+        }
+      }
+
+      function exePHPFunc_playtime(parameter)
+      {
+      	var defer = $.Deferred();
+
+      	$.ajax({
+      		url: "playtime_ajax.php",
+      		type: "POST",
+      		data: parameter,
+      		scriptCharset: 'utf-8',
+      		success: defer.resolve,
+      	});
+      	return defer.promise();
+      }
+
+      function spd_fun(){
+        var spd_min = 2000 ;
+        var spd_max = 5000 ;
+
+        spd = Math.floor( Math.random() * (spd_max + 1 - spd_min) ) + spd_min ;
+      }
+      function MoveRandom(){
+        //var H_m=0.057, W_m=0.043;
+        //var H=57, W=43;
+        if(position == 0){
+          for (i=0; i<nm; i++){
+            var muki;
+            var Y_temp=0;
+            var X_temp=0;
+           // a が0の時 縦 １の時 横
+            var shiho = Math.floor( Math.random() * (1 + 1 - 0) ) + 0 ;
+            //console.log(a);
+            //縦の場合
+            if(shiho == 0){
+              //b が0の時は前 1の気が後ろ
+              var zengo = Math.floor( Math.random() * (1 + 1 - 0) ) + 0 ;
+              //console.log(b);
+              //前の時の処理
+              if(zengo == 0){
+                Y_temp = Y[i] + 0.0005;
+                X_temp = X[i];
+                muki = 'back';
+              }//後ろの時
+              else if(zengo==1){
+                Y_temp = Y[i] - 0.0005;
+                X_temp = X[i];
+                muki = 'front';
+              }
+            } //横の場合
+            else if(shiho == 1){
+              //cが０の時は左　1の時は右
+              var sayu = Math.floor( Math.random() * (1 + 1 - 0) ) + 0 ;
+              //console.log(c);
+              //左の場合の処理
+              if (sayu==0) {
+                X_temp = X[i]+0.0005;
+                Y_temp = Y[i];
+                muki = 'right';
+              }//右の場合
+              else if(sayu==1){
+                X_temp =X[i]-0.0005;
+                Y_temp = Y[i];
+                muki = 'left';
+              }
+            }
+            var XY_temp=0;
+            <?php
+              $i = 0;
+              foreach ($location_shimotokida as $r) {
+                $x1 = $r['x1'];
+                $x2 = $r['x2'];
+                $y1 = $r['y1'];
+                $y2 = $r['y2'];
+                if($i==0){
+                echo "        if({$x1} < X_temp && X_temp <= {$x2}){\n";
+                }else{
+                echo "        else if({$x1} < X_temp && X_temp <= {$x2}){\n";
+                }
+                echo "          if({$y1} <= Y_temp && Y_temp <= {$y2}){\n";
+                  echo "            XY_temp = 1;\n";
+                echo "          }\n";
+                echo "        }\n";
+                $i++;
+              }
+            ?>
+            if(XY_temp > 0){
+              Y[i] = Y_temp;
+              X[i] = X_temp;
+              if(muki == 'front'){
+                var people_gif_te = people_front[i];
+                //console.log('f');
+              }else if (muki == 'back') {
+                var people_gif_te = people_back[i];
+                //console.log('b');
+              }else if (muki == 'left') {
+                var people_gif_te = people_left[i];
+                //console.log('l');
+              }else if (muki == 'right') {
+                var people_gif_te = people_right[i];
+                //console.log('r');
+              }
+              var people_gif_temp = myurl + people_gif_te;
+              murabito_marker[i].setIcon(people_gif_temp);
+            }
+            //console.log('i:'+i);
+            //console.log('Y：'+Y_temp+' X：'+X_temp);
+            console.log('i:'+i+' Y[]：'+Y[i]+' X[]：'+X[i]);
+            murabito_marker[i].setPosition(new google.maps.LatLng(Y[i],X[i]));
+          }
+        }
+        setTimeout(MoveRandom,spd);
+      }
+      spd_fun(); MoveRandom();
+
+      function moveMarker(){
+        marker.setPosition(new google.maps.LatLng(lat, lng));
+        map.panTo(new google.maps.LatLng(lat, lng));
+        console.log("lat："+lat+"　lng："+lng);
+      }
+    </script>
+    <?php
+      include 'fun/keydown.php';//キーボードが下がった時
+      include 'fun/keyup.php';//キーボードが上がった時
+      include 'fun/keydisp.php';//キーボードの処理
+    ?>
+    <script language="javascript">
+      document.onkeydown = keydown ; // イベント検出
+      document.onkeyup   = keyup ; // イベント検出
+    </script>
+  </body>
+</html>

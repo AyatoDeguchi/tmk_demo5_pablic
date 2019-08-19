@@ -1,0 +1,119 @@
+#a_btn {
+      /* ▼表示位置を画面の右下に固定 */
+      position: fixed; /* ←表示場所を固定 */
+      bottom: 136px;   /* ←下端からの距離 */
+      right: 96px;    /* ←右端からの距離 */
+      background-color:#fff;
+      opacity: 0.75;             /* ←透明度 */
+      padding: 0;
+      margin: 0;
+      width: 90px;
+      height: 90px;
+      line-height: 90px;
+      text-align: center;
+      display: inline-block;
+      border-radius: 50%;
+      font-size: 50px;
+      font-weight: bold;
+      color: black;
+}
+
+#b_btn {
+      /* ▼表示位置を画面の右下に固定 */
+      position: fixed; /* ←表示場所を固定 */
+      bottom: 18px;   /* ←下端からの距離 */
+      right: 170px;    /* ←右端からの距離 */
+      background-color:#fff;
+      opacity: 0.75;             /* ←透明度 */
+      padding: 0;
+      margin: 0;
+      width: 90px;
+      height: 90px;
+      line-height: 90px;
+      text-align: center;
+      display: inline-block;
+      border-radius: 50%;
+      font-size: 50px;
+      font-weight: bold;
+      color: black;
+}
+
+#u_btn {
+      /* ▼表示位置を画面の右下に固定 */
+      position: fixed; /* ←表示場所を固定 */
+      bottom: 162px;   /* ←下端からの距離 */
+      left: 90px;    /* ←右端からの距離 */
+      background-color:#fff;
+      opacity: 0.75;             /* ←透明度 */
+      padding: 0;
+      margin: 0;
+      width: 90px;
+      height: 90px;
+      line-height: 90px;
+      text-align: center;
+      display: inline-block;
+      border-radius: 50%;
+      font-size: 50px;
+      font-weight: bold;
+      color: black;
+}
+
+#d_btn {
+      /* ▼表示位置を画面の右下に固定 */
+      position: fixed; /* ←表示場所を固定 */
+      bottom: 18px;   /* ←下端からの距離 */
+      left: 90px;    /* ←右端からの距離 */
+      background-color:#fff;
+      opacity: 0.75;             /* ←透明度 */
+      padding: 0;
+      margin: 0;
+      width: 90px;
+      height: 90px;
+      line-height: 90px;
+      text-align: center;
+      display: inline-block;
+      border-radius: 50%;
+      font-size: 50px;
+      font-weight: bold;
+      color: black;
+}
+
+#r_btn {
+      /* ▼表示位置を画面の右下に固定 */
+      position: fixed; /* ←表示場所を固定 */
+      bottom: 90px;   /* ←下端からの距離 */
+      left: 162px;    /* ←右端からの距離 */
+      background-color:#fff;
+      opacity: 0.75;             /* ←透明度 */
+      padding: 0;
+      margin: 0;
+      width: 90px;
+      height: 90px;
+      line-height: 90px;
+      text-align: center;
+      display: inline-block;
+      border-radius: 50%;
+      font-size: 50px;
+      font-weight: bold;
+      color: black;
+}
+
+#l_btn {
+      /* ▼表示位置を画面の右下に固定 */
+      position: fixed; /* ←表示場所を固定 */
+      bottom: 90px;   /* ←下端からの距離 */
+      left: 18px;    /* ←右端からの距離 */
+      background-color:#fff;
+      opacity: 0.75;             /* ←透明度 */
+      padding: 0;
+      margin: 0;
+      width: 90px;
+      height: 90px;
+      line-height: 90px;
+      text-align: center;
+      display: inline-block;
+      border-radius: 50%;
+      font-size: 50px;
+      font-weight: bold;
+      color: black;
+}

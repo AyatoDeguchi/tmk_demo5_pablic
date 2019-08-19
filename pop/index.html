@@ -1,0 +1,542 @@
+<?php
+  include 'db_config.php';
+  include 'db_people.php';
+?>
+<?php
+$user_id = $_GET['user_id'];
+$hero_id = $_GET['hero_id'];
+?>
+<!DOCTYPE html>
+<html>
+  <head>
+    <?php include "head.php"; ?>
+    <script src="//maps.googleapis.com/maps/api/js?key=AIzaSyDHkV98ZXPyeaV6tgQjHDa4OSEHW-xTQ3I"></script>
+    <script>
+    function font_size(){
+      //window_show.innerHTML='a:'+'　h'+main_height+'　w'+main_width;
+      //cmd
+      if(900 <= main_width && main_width < 1100){
+        $('#cmd').css('font-size', 28+'px');$('#cmd').css('line-height', 60+'px');
+        $('.part_line').css('font-size', 23+'px');
+        $('.si-ku').css('font-size', 15+'px');
+      }
+      else if(850 <= main_width && main_width < 900){
+        $('#cmd').css('font-size', 22+'px');$('#cmd').css('line-height', 47+'px');
+        $('.part_line').css('font-size', 18+'px');
+        $('.si-ku').css('font-size', 13+'px');
+      }
+      else if(650 <= main_width && main_width < 850){
+        $('#cmd').css('font-size', 18+'px');$('#cmd').css('line-height', 38+'px');
+        $('.part_line').css('font-size', 14+'px');
+        $('.si-ku').css('font-size', 10+'px');
+      }
+      else if(500 <= main_width && main_width < 650){
+        $('#cmd').css('font-size', 12+'px');$('#cmd').css('line-height', 25+'px');
+        $('.part_line').css('font-size', 10+'px');
+        $('.si-ku').css('font-size', 8+'px');
+      }
+      else if(main_width < 500){
+        $('#cmd').css('font-size', 8+'px');$('#cmd').css('line-height', 20+'px');
+        $('.part_line').css('font-size', 6+'px');
+        $('.si-ku').css('font-size', 5+'px');
+      }
+      else if(1100 <= main_width){
+        $('#cmd').css('font-size', 32+'px');$('#cmd').css('line-height', 68+'px');
+        $('.part_line').css('font-size', 30+'px');
+        $('.si-ku').css('font-size', 20+'px');
+      }
+    }
+    </script>
+    <!-- <link rel="stylesheet" href="css/foot.css" type="text/css" media="all"> -->
+    <style>
+    /* seniからパクってきたやつ--------------------------------ここから */
+    .main{
+      position:absolute;
+      width:1184px;
+      height:860px;
+      background-color:black;
+      color: #fff;
+      margin:0 auto;
+      top:0px;
+      left:0px;
+      bottom:0px;
+      right:0px;
+    }
+    #range{
+      /*position: absolute;*/ /* ←表示場所を固定 */
+      /*bottom: 18px;*/   /* ←下端からの距離 */
+      margin-left: 20px;
+      margin-right: 20px;
+      margin-top: 20px;
+      /*right: 4px;*/    /* ←右端からの距離 */
+      width: 42%;
+      background-color:black;
+      padding: 0;
+      /*vertical-align: middle ;*/
+      /*width: 100%;*/
+      transform: scale(2);
+      height: auto;
+      /*line-height: 90px;*/
+      /*text-align: left;*/
+      display: inline-block;
+      border-radius: 2%;
+      font-size: 50px;
+
+    }
+    /* seniからパクってきたやつ--------------------------------ここまで */
+      #gmap {
+        width: 100% ;
+        height: 100% ;
+      }
+      /* 戻るボタン------------------------------------------ */
+      .square_btn{
+          position:absolute;
+          display: inline-block;
+          font-weight: bold;
+          width: auto;
+          height: auto;
+          font-size: 25px;
+          top:4%;
+          left:1%;
+          padding: 0.5em 0.75em;
+          color: #00BFFF;
+          background-color: #fff;
+          border: double 4px #00BFFF;
+          border-radius: 3px;
+          transition: .4s;
+          }
+
+          .square_btn:hover {
+        background: #F8E6E0;
+      }
+
+      /* 戻るボタン------------------------------------------ */
+
+      #cmd {
+        /* ▼表示位置を画面の右下に固定 */
+        position: absolute; /* ←表示場所を固定 */
+        top: 5%;   /* ←下端からの距離 */
+      /*  top: 446px;*/
+        /*right: 200px;*/    /* ←右端からの距離 */
+        left: 5%;
+        background-color:black;
+        opacity: 1;             /* ←透明度 */
+        padding: 4px;
+        /*padding-right: 80px;*/
+        width: auto;
+        color: #fff;
+        height: auto;
+        line-height: 60px;
+        text-align: left;
+        display: inline-block;
+        border-radius: 2%;
+        font-size: 28px;
+        border: 2px solid #fff
+      }
+      .table-ul {
+        display: table;
+        table-layout: fixed;
+        text-align: center;
+        width: 100%;
+      }
+      .table-ul li {
+        display: table-cell;
+        /* vertical-align: middle; */
+      }
+    </style>
+    <?php include "../loading.php"; ?>
+  </head>
+  <body>
+    <div id="fade"></div>
+    <div class="main" id="main">
+      <div id="loader"><img src="../img/loading.gif" style="width: 100%;"alt="Now Loading..." /></div>
+      <div id="gmap"></div>
+
+      <a href="../map/index.html?user_id=<?php echo $user_id; ?>&hero_id=<?php echo $hero_id; ?>" class="square_btn">
+      	<i class="fa fa-caret-right"></i>
+        前の画面に戻る</a>
+
+    <!-- シークバー・ボックス設置 -->
+    <div class="si-ku" style="position: absolute;bottom: 5%;left: 20%;right: 20%;border-radius: 4%;border: 5px solid #fff;text-align: center;background-color:black;height:12%;">
+      <form style="">
+        <input id="range" type="range" min="0" max="20" value="0" step="5">
+      </form>
+      <ul class="table-ul" style="list-style:none;padding:0;margin:0;margin-top:15px;">
+        <li >現在</li>
+        <li>5年後</li>
+        <li>10年後</li>
+        <li>15年後</li>
+        <li>20年後</li>
+      </ul>
+    </div>
+    </div>
+    <script>
+      //--------------------------------------------------------------キーボード
+      // キーボードのフラグ　（1 : 押されている / 0 : 離されている）
+      var left  = 0 ;
+      var up    = 0 ;
+      var right = 0 ;
+      var down  = 0 ;
+      var space = 0 ;
+      var Z_key = 0 ;
+      var X_key = 0 ;
+
+      var pv =  0.00025; // 1回の移動量
+      var position = 0;
+
+      //--------------------------------------------------------------murabito
+      //★蝶の画像指定。画像を順番に"●",と区切って、いくつでも並べる。最後の]の前には,(カンマ)無し
+      //var Pic=["drg2.gif","drg3.gif","ok8c.gif"];
+      //var Pic=["ji_f.gif","ba_f.gif","yami_ji_f.gif","yami_ba_f.gif","wo_f.gif","ma_f.gif","bo_f.gif","gi_f.gif"];
+      //var myurl="../../16421/seni/8_map/img/people/"; //★画像パス。文書とは別のフォルダーなどに入っている時は指定。全画像共通部分
+      //var nm=8;    //★画像表示数
+      //var inZ=1;   //★画像や文章の上に浮くなら 1 。下に隠れるなら -1
+      //var spd;   //★速度。原本10。数値が大きいほど遅い-----------------未定義
+      //var n=Pic.length;//配列数
+      //var load=new Array(); for(var p=0; p<n; p++){load[p]=new Image(); load[p].src=myurl+Pic[p];}//画像先読み
+      //var Y=[],X=[];
+      //var D=[],SP=[];
+      //var Y_temp,X_temp;
+      //var Y_min=34.4522799, X_min=136.5783598;
+      //var murabito_marker=[];
+
+      //--------------------------------------------------------------map
+      var lat = 34.4852799;
+      var lng = 136.6243598;
+      var map = new google.maps.Map(
+        document.getElementById("gmap"),{
+          zoom : 13.4,  /*地図のズーム値。値が小さいほど広域。*/
+          center : new google.maps.LatLng(lat, lng),
+          mapTypeControl :false,//地図・衛星写真などを切り替えるボタンです
+          zoomControl:false,//地図の拡大・縮小を行う「+」「-」ボタンです。
+          fullscreenControl:false,//マップを全画面モードで表示するためのボタンです。
+          rotateControl:false,//	衛星写真の表示時に斜め45度画像があれば、その向きの制御や回転を行うボタンです
+          scaleControl:false,//地図のスケールです。デフォルトでは非表示です
+          streetViewControl:false,//streetView
+          draggable:false,//false に設定すると、マップの移動をマウスのドラッグできなくなります。
+          disableDoubleClickZoom:true,//true に設定すると、ダブルクリックによるズームができなくなります。
+          keyboardShortcuts:false,//	false に設定すると、マップをキーボートで移動できなくなります。
+          scrollwheel:false,//false に設定すると、マウスホイールでの拡大・縮小ができなくなります。
+          clickableIcons:false//false に設定すると、地図上に表示されている会社やお店などのPOI(Point of Interest)アイコンをクリックできなくなります。
+
+          //mapTypeId: google.maps.MapTypeId.SATELLITE ,
+    	    //tilt: 45 ,
+          //mapTypeId : google.maps.MapTypeId.ROADMAP
+        }
+      );
+      <?php
+        include 'map_style.php';
+      ?>
+
+      //------------------------------------------------------------村人情報
+      var db_people_name=[],db_people_jp_name=[],db_people_front=[],db_people_left=[],db_people_right=[],db_people_back=[];
+      <?php
+        $i = 0;
+        foreach ($people as $r){
+          echo <<< EOM
+          db_people_name[{$i}] = "{$r['name']}";db_people_jp_name[{$i}] = "{$r['jp_name']}";db_people_front[{$i}] = "{$r['front']}";db_people_left[{$i}] = "{$r['left']}";db_people_right[{$i}] = "{$r['right']}";db_people_back[{$i}] = "{$r['back']}";
+EOM;
+          $i++;
+        }
+      ?>
+      var db_random_spawn_shimotokida_x=[],db_random_spawn_shimotokida_y=[];
+      <?php
+        $i = 0;
+        foreach ($random_spawn_shimotokida as $r){
+          echo <<< EOM
+          db_random_spawn_shimotokida_x[{$i}] = "{$r['x']}";db_random_spawn_shimotokida_y[{$i}] = "{$r['y']}";
+EOM;
+          $i++;
+        }
+      ?>
+      for(var i=0;i<16;i++){
+        console.log(i + db_people_front[i]);
+      }
+
+      //--------------------------------------------------------------murabito
+
+      /*for (var i=0; i<nm; i++){
+        murabito_marker[i] = new google.maps.Marker({
+          position: new google.maps.LatLng(_y[i], _x[i]),
+          map: map,
+          //icon : myurl+Pic[i%n]
+          icon : myurl+people_front[i]
+        });
+        //Y[i]=people_y[i];
+        //X[i]=people_x[i];
+      }*/
+
+      /*
+      //--------------------------------------------メモ
+      子ども 0~9
+      学生 10~19
+      一般 20~59
+      シニア 60~100歳
+      */
+      var uda_marker=[];
+      var tokida_marker=[];
+      var tamaru_marker=[];
+      var shimotokida_marker=[];
+
+    </script>
+    <?php include 'zero/calculation.php'; ?>
+    <?php include 'zero/calculation3.php'; ?>
+    <?php include 'zero/uda.php'; ?>
+    <?php include 'zero/tamaru.php'; ?>
+    <?php include 'zero/tokida.php'; ?>
+    <?php include 'zero/shimotokida.php'; ?>
+    <?php include 'five/calculation.php'; ?>
+    <?php include 'five/calculation3.php'; ?>
+    <?php include 'five/uda.php'; ?>
+    <?php include 'five/tamaru.php'; ?>
+    <?php include 'five/tokida.php'; ?>
+    <?php include 'five/shimotokida.php'; ?>
+    <?php include 'ten/calculation.php'; ?>
+    <?php include 'ten/calculation3.php'; ?>
+    <?php include 'ten/uda.php'; ?>
+    <?php include 'ten/tamaru.php'; ?>
+    <?php include 'ten/tokida.php'; ?>
+    <?php include 'ten/shimotokida.php'; ?>
+    <?php include 'fifteen/calculation.php'; ?>
+    <?php include 'fifteen/calculation3.php'; ?>
+    <?php include 'fifteen/uda.php'; ?>
+    <?php include 'fifteen/tamaru.php'; ?>
+    <?php include 'fifteen/tokida.php'; ?>
+    <?php include 'fifteen/shimotokida.php'; ?>
+    <?php include 'twenty/calculation.php'; ?>
+    <?php include 'twenty/calculation3.php'; ?>
+    <?php include 'twenty/uda.php'; ?>
+    <?php include 'twenty/tamaru.php'; ?>
+    <?php include 'twenty/tokida.php'; ?>
+    <?php include 'twenty/shimotokida.php'; ?>
+    <script>
+
+    /*$( 'input[type=range]' ).on( 'input', function () {
+      var val = $(this).val();
+      console.log(val);
+    } );*/
+    zero_uda();
+    zero_tamaru();
+    zero_tokida();
+    zero_shimotokida();
+    /* 変更後 */
+    $( 'input[type=range]' ).change( function () {
+      var val = $(this).val();
+      console.log(val);
+      if(val == 0){
+        marker_sakujyo()
+        zero_uda();
+        zero_tamaru();
+        zero_tokida();
+        zero_shimotokida();
+      }else if(val == 5){
+        marker_sakujyo()
+        five_uda();
+        five_tamaru();
+        five_tokida();
+        five_shimotokida();
+      }else if(val == 10){
+        marker_sakujyo()
+        ten_uda();
+        ten_tamaru();
+        ten_tokida();
+        ten_shimotokida();
+      }else if(val == 15){
+        marker_sakujyo()
+        fifteen_uda();
+        fifteen_tamaru();
+        fifteen_tokida();
+        fifteen_shimotokida();
+      }else if(val == 20){
+        marker_sakujyo()
+        twenty_uda();
+        twenty_tamaru();
+        twenty_tokida();
+        twenty_shimotokida();
+      }
+
+    } );
+    function marker_sakujyo(){
+      tokida_marker.forEach(function (marker, idx) { marker.setMap(null); });
+      shimotokida_marker.forEach(function (marker, idx) { marker.setMap(null); });
+      uda_marker.forEach(function (marker, idx) { marker.setMap(null); });
+      tamaru_marker.forEach(function (marker, idx) { marker.setMap(null); });
+    }
+
+    // <?php include "../audio.php"; ?>
+    // <script type="text/javascript" src="../js/wa.js"></script>
+    // <script>
+    //   var tap = 0;
+    //   var myAudio = new Audio('');
+    //   var audio_file_name = 'map';
+    //
+    //   audio_play(audio_file_name);
+    //   ;(function(wa){
+    //     var event = "click";
+    //     document.addEventListener(event, function() {
+    //         if (tap == 0){
+    //         //無音再生
+    //         wa.playSilent();
+    //         audio_play(audio_file_name);
+    //         setTimeout(map_loop,89000);
+    //         tap = 1;
+    //       }
+    //     });
+    //
+    //   }(wa));
+    //   function map_loop(){
+    //     audio_file_name = 'map';
+    //     audio_play(audio_file_name);
+    //     setTimeout(map_loop,89000);
+    //   }
+
+      //------------------------------------------------------選択
+      var max=6;
+      var here=1;
+
+      function menu_select(x){
+        /*if(position==0){
+          intTmrInterval_fun(0);
+          if(x == "up"){
+            var lat_temp = lat + pv;
+            marker.setIcon('../../16421/seni/8_map/img/mayor_b.gif');
+            if(lng_temp <= 136.68035980000028 && 136.56835979999974 <= lng_temp){
+              lng = lng_temp;
+            }
+            if(lat_temp <= 34.518279899999925 && 34.45227990000008 <= lat_temp){
+              lat = lat_temp;
+            }
+            moveMarker();	// アニメーション移動開始
+          }else if(x == "down"){
+            var lat_temp = lat - pv;
+            marker.setIcon('../../16421/seni/8_map/img/mayor_f.gif');
+            if(lng_temp <= 136.68035980000028 && 136.56835979999974 <= lng_temp){
+              lng = lng_temp;
+            }
+            if(lat_temp <= 34.518279899999925 && 34.45227990000008 <= lat_temp){
+              lat = lat_temp;
+            }
+            moveMarker();	// アニメーション移動開始
+          }else if(x == "left"){
+            var lng_temp = lng - pv;
+            marker.setIcon('../../16421/seni/8_map/img/mayor_l.gif');
+            if(lng_temp <= 136.68035980000028 && 136.56835979999974 <= lng_temp){
+              lng = lng_temp;
+            }
+            if(lat_temp <= 34.518279899999925 && 34.45227990000008 <= lat_temp){
+              lat = lat_temp;
+            }
+            moveMarker();	// アニメーション移動開始
+          }else if(x == "right"){
+            var lng_temp = lng + pv;
+            marker.setIcon('../../16421/seni/8_map/img/mayor_r.gif');
+            if(lng_temp <= 136.68035980000028 && 136.56835979999974 <= lng_temp){
+              lng = lng_temp;
+            }
+            if(lat_temp <= 34.518279899999925 && 34.45227990000008 <= lat_temp){
+              lat = lat_temp;
+            }
+            moveMarker();	// アニメーション移動開始
+          }else if(x == "ok"){
+            setTimeout('position = 1;', 500);
+            document.getElementById("cmd").style.display = "block";
+          }else if(x == "no"){
+
+          }
+          setTimeout(menu_select,500);
+        }
+        else if(position==1){
+          intTmrInterval_fun(1);
+          if(x == "up"){
+            if(here == 1){here = max+1;}
+            here = here - 1;
+          }else if(x == "down"){
+            if(here == max){here = 0;}
+            here = here + 1;
+          }else if(x == "ok"){
+            if(here == 1){
+              setTimeout('position = 2;', 500);
+              talk_talk();
+            }else if(here == 2){
+
+              document.getElementById("cmd_2_a").click();
+            }else if(here == 3){
+            }else if(here == 4){
+            }else if(here == 5){
+              document.getElementById("cmd_5_a").click();
+            }else if(here == 6){
+            }
+          }else if(x == "no"){
+            setTimeout('position = 0;', 500);
+            cmd_1.innerHTML ='▶';
+            cmd_2.innerHTML ='　';
+            cmd_3.innerHTML ='　';
+            cmd_4.innerHTML ='　';
+            cmd_5.innerHTML ='　';
+            cmd_6.innerHTML ='　';
+            document.getElementById("cmd").style.display = "none";
+          }
+          if(here == 1){
+            cmd_1.innerHTML ='▶';
+            cmd_2.innerHTML ='　';
+            cmd_3.innerHTML ='　';
+            cmd_4.innerHTML ='　';
+            cmd_5.innerHTML ='　';
+            cmd_6.innerHTML ='　';
+          }else if(here == 2){
+            cmd_1.innerHTML ='　';
+            cmd_2.innerHTML ='▶';
+            cmd_3.innerHTML ='　';
+            cmd_4.innerHTML ='　';
+            cmd_5.innerHTML ='　';
+            cmd_6.innerHTML ='　';
+          }else if(here == 3){
+            cmd_1.innerHTML ='　';
+            cmd_2.innerHTML ='　';
+            cmd_3.innerHTML ='▶';
+            cmd_4.innerHTML ='　';
+            cmd_5.innerHTML ='　';
+            cmd_6.innerHTML ='　';
+          }else if(here == 4){
+            cmd_1.innerHTML ='　';
+            cmd_2.innerHTML ='　';
+            cmd_3.innerHTML ='　';
+            cmd_4.innerHTML ='▶';
+            cmd_5.innerHTML ='　';
+            cmd_6.innerHTML ='　';
+          }else if(here == 5){
+            cmd_1.innerHTML ='　';
+            cmd_2.innerHTML ='　';
+            cmd_3.innerHTML ='　';
+            cmd_4.innerHTML ='　';
+            cmd_5.innerHTML ='▶';
+            cmd_6.innerHTML ='　';
+          }else if(here == 6){
+            cmd_1.innerHTML ='　';
+            cmd_2.innerHTML ='　';
+            cmd_3.innerHTML ='　';
+            cmd_4.innerHTML ='　';
+            cmd_5.innerHTML ='　';
+            cmd_6.innerHTML ='▶';
+          }
+          setTimeout(menu_select,1000);
+        }
+        else if (position == 2) {
+          if(x == "ok"){
+            document.getElementById("foot").click();
+          }
+        }*/
+      }
+
+    </script>
+    <?php
+      include 'fun/keydown.php';//キーボードが下がった時
+      include 'fun/keyup.php';//キーボードが上がった時
+      include 'fun/keydisp.php';//キーボードの処理
+    ?>
+    <script language="javascript">
+      document.onkeydown = keydown ; // イベント検出
+      document.onkeyup   = keyup ; // イベント検出
+    </script>
+  </body>
+</html>

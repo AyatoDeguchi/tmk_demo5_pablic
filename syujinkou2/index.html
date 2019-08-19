@@ -1,0 +1,285 @@
+<?php
+  include 'db_config.php';
+  $syujinkou = array();
+  try
+  {
+     $db = new PDO(PDO_DSN, DB_USERNAME, DB_PASSWORD);
+     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+     $hero_id = $_GET['hero_id'];
+     $stmt = $db->query("SELECT * FROM hero WHERE id = '{$hero_id}'");
+     $syujinkou = $stmt->fetchAll(PDO::FETCH_ASSOC);
+     $db = null;
+  }
+  catch(PDOException $e)
+  {
+   echo $e->getMessage();
+   exit;
+  }
+    //print_r($syujinkou);
+
+    foreach ($syujinkou as $l) {
+      $name = $l['name'];
+      $feature = $l['feature'];
+      $png = $l['png'];
+    }
+
+    $user_id = $_GET['user_id'];
+    $hero_id = $_GET['hero_id'];
+
+?>
+<!DOCTYPE html>
+<html>
+  <head>
+    <?php include "head.php"; ?>
+    <title>主人公選択</title>
+    <script>
+    function font_size(){
+      //window_show.innerHTML='a:'+'　h'+main_height+'　w'+main_width;
+      //menu
+      if(1000 <= main_width && main_width < 1100){
+        $('#menu').css('font-size', 28+'px');$('#menu').css('line-height', 60+'px');
+        $('#title').css('font-size', 41+'px');$('#title').css('line-height', 60+'px');
+        $('#mark').css('font-size', 41+'px');$('#mark').css('line-height', 40+'px');
+        $('.mark').css('font-size', 41+'px');$('.mark').css('line-height', 40+'px');
+        $('#chara-name').css('font-size', 39+'px');$('#chara-name').css('line-height', 60+'px');
+        $('#chara-img').css('width', 80+'%');$('#chara-img').css('height', 80+'%');
+        $('#sentences').css('font-size', 27+'px');$('#sentences').css('line-height', 40+'px');
+        $('#Question').css('font-size', 27+'px');$('#Question').css('line-height', 37+'px');
+        $('#ans').css('font-size', 27+'px');$('#ans').css('line-height', 40+'px');
+      }
+      else if(850 <= main_width && main_width < 1000){
+        $('#menu').css('font-size', 22+'px');$('#menu').css('line-height', 47+'px');
+        $('#title').css('font-size', 35+'px');$('#title').css('line-height', 47+'px');
+        $('#mark').css('font-size', 35+'px');$('#mark').css('line-height', 47+'px');
+        $('.mark').css('font-size', 35+'px');$('.mark').css('line-height', 47+'px');
+        $('#chara-name').css('font-size', 33+'px');$('#chara-name').css('line-height', 47+'px');
+        $('#chara-img').css('width', 65+'%');$('#chara-img').css('height', 65+'%');
+        $('#sentences').css('font-size', 20+'px');$('#sentences').css('line-height', 23+'px');
+        $('#Question').css('font-size', 20+'px');$('#Question').css('line-height', 30+'px');
+        $('#ans').css('font-size', 20+'px');$('#ans').css('line-height', 47+'px');
+      }
+      else if(650 <= main_width && main_width < 850){
+        $('#menu').css('font-size', 18+'px');$('#menu').css('line-height', 38+'px');
+        $('#title').css('font-size', 31+'px');$('#title').css('line-height', 38+'px');
+        $('#mark').css('font-size', 31+'px');$('#mark').css('line-height', 38+'px');
+        $('.mark').css('font-size', 31+'px');$('.mark').css('line-height', 38+'px');
+        $('#chara-name').css('font-size', 29+'px');$('#chara-name').css('line-height', 38+'px');
+        $('#chara-img').css('width', 50+'%');$('#chara-img').css('height', 50+'%');
+        $('#sentences').css('font-size', 18+'px');$('#sentences').css('line-height', 18+'px');
+        $('#Question').css('font-size', 15+'px');$('#Question').css('line-height', 20+'px');
+        $('#ans').css('font-size', 15+'px');$('#ans').css('line-height', 38+'px');
+      }
+      else if(500 <= main_width && main_width < 650){
+        $('#menu').css('font-size', 12+'px');$('#menu').css('line-height', 25+'px');
+        $('#title').css('font-size', 25+'px');$('#title').css('line-height', 25+'px');
+        $('#mark').css('font-size', 25+'px');$('#mark').css('line-height', 25+'px');
+        $('.mark').css('font-size', 25+'px');$('.mark').css('line-height', 25+'px');
+        $('#chara-name').css('font-size', 23+'px');$('#chara-name').css('line-height', 25+'px');
+        $('#chara-img').css('width', 35+'%');$('#chara-img').css('height', 35+'%');
+        $('#sentences').css('font-size', 15+'px');$('#sentences').css('line-height', 15+'px');
+        $('#Question').css('font-size', 10+'px');$('#Question').css('line-height', 13+'px');
+        $('#ans').css('font-size', 10+'px');$('#ans').css('line-height', 25+'px');
+      }
+      else if(main_width < 500){
+        $('#menu').css('font-size', 8+'px');$('#menu').css('line-height', 20+'px');
+        $('#title').css('font-size', 21+'px');$('#title').css('line-height', 20+'px');
+        $('#mark').css('font-size', 21+'px');$('#mark').css('line-height', 20+'px');
+        $('.mark').css('font-size', 21+'px');$('.mark').css('line-height', 20+'px');
+        $('#chara-name').css('font-size', 19+'px');$('#chara-name').css('line-height', 20+'px');
+        $('#chara-img').css('width', 25+'%');$('#chara-img').css('height', 25+'%');
+        $('#sentences').css('font-size', 12+'px');$('#sentences').css('line-height', 10+'px');
+        $('#Question').css('font-size', 8+'px');$('#Question').css('line-height', 10+'px');
+        $('#ans').css('font-size', 8+'px');$('#ans').css('line-height', 20+'px');
+      }
+      else if(1100 <= main_width){
+        $('#menu').css('font-size', 32+'px');$('#menu').css('line-height', 68+'px');
+        $('#title').css('font-size', 45+'px');$('#title').css('line-height', 68+'px');
+        $('#mark').css('font-size', 45+'px');$('#mark').css('line-height', 68+'px');
+        $('.mark').css('font-size', 45+'px');$('.mark').css('line-height', 68+'px');
+        $('#chara-name').css('font-size', 43+'px');$('#chara-name').css('line-height', 68+'px');
+        $('#chara-img').css('width', 100+'%');$('#chara-img').css('height', 100+'%');
+        $('#sentences').css('font-size', 33+'px');$('#sentences').css('line-height', 40+'px');
+        $('#Question').css('font-size', 33+'px');$('#Question').css('line-height', 45+'px');
+        $('#ans').css('font-size', 33+'px');$('#ans').css('line-height', 68+'px');
+      }
+    }
+    </script>
+    <style>
+      #menu {
+        /* ▼表示位置を画面の右下に固定 */
+        /* position: absolute; /* ←表示場所を固定 */ */
+        /* top: 50%;   /* ←下端からの距離 */ */
+      /*  top: 446px;*/
+        /*right: 200px;*/    /* ←右端からの距離 */
+        left: 60%;
+        background-color:black;
+        opacity: 1;             /* ←透明度 */
+        padding: 4px;
+        padding-right: 2%;
+        width: 20%;
+        color: #fff;
+        height: auto;
+        line-height: 60px;
+        text-align: left;
+        display: inline-block;
+        border-radius: 2%;
+        /* font-size: 35px; */
+        border: 5px solid #fff
+      }
+      .table-ul {
+        display: table;
+        table-layout: fixed;
+        text-align: center;
+        width: auto;
+      }
+      .table-li {
+        display: table-cell;
+        vertical-align: middle;
+      }
+    </style>
+    <?php include "../loading.php"; ?>
+  </head>
+  <body>
+    <div id="fade"></div>
+    <div class="main" id="main" style="/*display:none;*/">
+      <div id="loader"><img src="../img/loading.gif" style="width: 100%;"alt="Now Loading..." /></div>
+      <!-- ページのタイトル表示 -->
+        <p id="title" style="margin-left:10px;margin-top:20px;">あなたがなりたいキャラクターを選択してください。</p>
+      <hr>
+        <!-- キャラの頭上の矢印配置 -->
+          <ul class="table-ul" style="list-style:none;padding:0;margin-bottom:10px;margin-top:20px;">
+          <ul class="table-li" style="list-style:none;">
+            <li id="mark">▼</li>
+            <!-- キャラ画像の配置 -->
+            <li id="chara-img"><img src="../img/<?php echo $png; ?>"></li>
+            <!-- キャラ文字の配置 -->
+            <li id="chara-name"><?php echo $name; ?></li>
+          </ul>
+            <!-- キャラ説明文 -->
+            <li class="table-li" id="sentences" style="padding-left:7%;text-align:left;width:45%;">
+              <p><?php echo $feature; ?></p>
+            </li>
+            <li class="table-li" style="list-style:none;text-align:left;line-height:20px;">
+            <ul style="list-style:none;padding-left:0%;">
+            <li><p id="Question">このキャラクターにしますか？</p></li>
+              <li><div id="menu" class="boxContainer" style="padding:5%;margin-left:25%;width:auto;">
+                <ul class="box" style="list-style:none;margin-left:2px;padding:0;">
+                  <li id="menu_1" class="mark">▶</li>
+                  <li id="menu_2" class="mark">　</li>
+                </ul>
+                <!-- 「はい」「いいえ」ボタンの設置 -->
+                <ul id="ans" class="box" style="list-style:none;padding-left:5px;">
+                  <li>はい</li>
+                  <li>いいえ</li>
+                </ul>
+              </div>
+            </li>
+            </ul>
+            </li>
+            </ul>
+            <ul style="display: none;">
+              <li><a type="button" id="menu_1_a" href="../map/index.html?user_id=<?php echo $user_id; ?>&hero_id=<?php echo $hero_id; ?>">メイン画面へ</a></li>
+              <li><a type="button" id="menu_2_a" href="../syujinkou/index.html?user_id=<?php echo $user_id; ?>">前の画面に戻る</a></li>
+            </ul>
+      </div>
+      <!-- 操作ボタン設置 -->
+    <div>
+      <p id="a_btn" onMouseDown="a_start();" onMouseUp="a_stop();" onmouseout="a_stop();" ontouchend="a_stop();">○</p>
+      <p id="b_btn" onMouseDown="b_start();" onMouseUp="b_stop();" onmouseout="b_stop();" ontouchend="b_stop();">×</p>
+      <p id="u_btn" onMouseDown="u_start();" onMouseUp="u_stop();" onmouseout="u_stop();" ontouchend="u_stop();">▲</p>
+      <p id="d_btn" onMouseDown="d_start();" onMouseUp="d_stop();" onmouseout="d_stop();" ontouchend="d_stop();">▼</p>
+      <p id="r_btn" onMouseDown="r_start();" onMouseUp="r_stop();" onmouseout="r_stop();" ontouchend="r_stop();">▶</p>
+      <p id="l_btn" onMouseDown="l_start();" onMouseUp="l_stop();" onmouseout="l_stop();" ontouchend="l_stop();">◀</p>
+    </div>
+    <?php include "../audio.php"; ?>
+    <script type="text/javascript" src="../js/wa.js"></script>
+    <script>
+    var tap = 0;
+    var myAudio = new Audio('');
+    var audio_file_name = 'menu';
+
+    audio_play(audio_file_name);
+    ;(function(wa){
+      var event = "click";
+      document.addEventListener(event, function() {
+          if (tap == 0){
+          //無音再生
+          wa.playSilent();
+          audio_play(audio_file_name);
+          setTimeout(menu_loop,32000);
+          tap = 1;
+        }
+      });
+
+    }(wa));
+    function menu_loop(){
+      audio_file_name = 'menu';
+      audio_play(audio_file_name);
+      setTimeout(menu_loop,32000);
+    }
+    //特に重要じゃない↓-----------------
+    <?php
+      if(isset($_GET['hero_id'])){
+        $key = $_GET['hero_id'];
+      }else{
+        $key = '1';
+      }
+    ?>
+      console.log("<?php echo $_GET['hero_id']; ?>");
+    //-------------------------------
+
+      //--------------------------------------------------------------キーボード
+      // キーボードのフラグ　（1 : 押されている / 0 : 離されている）
+      var left  = 0 ;
+      var up    = 0 ;
+      var right = 0 ;
+      var down  = 0 ;
+      var space = 0 ;
+      var Z_key = 0;
+      var X_key = 0;
+    </script>
+    <script>
+      //------------------------------------------------------選択
+      var max=2;
+      var here=1;
+
+      function menu_select(x){
+        if(x == "up"){
+          if(here == 1){here = max+1;}
+          here = here - 1;
+          // console.log('r'+here);
+        }else if(x == "down"){
+          if(here == max){here = 0;}
+          here = here + 1;
+          // console.log('l'+here);
+        }else if(x == "ok"){
+          var audio_file_name = 'decide';
+          audio_play(audio_file_name);
+          if(here == 1){
+            document.getElementById("menu_1_a").click();
+          }else if(here == 2){
+            document.getElementById("menu_2_a").click();
+          }
+        }
+        if(here == 1){
+          menu_1.innerHTML ='▶︎';
+          menu_2.innerHTML ='　';
+        }else if(here == 2){
+          menu_1.innerHTML ='　';
+          menu_2.innerHTML ='▶︎';
+        }
+        setTimeout(menu_select,1000);
+      }
+
+    </script>
+    <?php
+      include 'fun/keydown.php';//キーボードが下がった時
+      include 'fun/keyup.php';//キーボードが上がった時
+      include 'fun/keydisp.php';//キーボードの処理
+    ?>
+    <script language="javascript">
+      document.onkeydown = keydown ; // イベント検出
+      document.onkeyup   = keyup ; // イベント検出
+    </script>
+  </body>
+</html>

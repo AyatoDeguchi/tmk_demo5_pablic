@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <?php include "head.php"; ?>
+    <?php
+      if(isset($_GET['user_id'])){
+        $timestamp = time();
+        $user_id = $_GET['user_id'];
+      }else{
+        $timestamp = time();
+        //$user_id = $timestamp;
+        $user_id = 0;
+      }
+      if(isset($_GET['hero_id'])){
+        $hero_id = $_GET['hero_id'];
+      }else{
+        $hero_id = 0;
+      }
+    ?>
+    <!--serviceWorkerへの登録-->
+    <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('serviceWorker.js').then(function(registration) {
+        // 登録成功
+        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+      }).catch(function(err) {
+        // 登録失敗 :(
+        console.log('ServiceWorker registration failed: ', err);
+      });
+    }
+    function font_size(){
+      //window_show.innerHTML='a:'+'　h'+main_height+'　w'+main_width;
+      //menu
+      if(900 <= main_width && main_width < 1100){
+        $('#menu').css('font-size', 28+'px');$('#menu').css('line-height', 60+'px');
+        $('#menu').css('font-size', 28+'px');$('#menu').css('line-height', 60+'px');
+      }
+      else if(850 <= main_width && main_width < 900){
+        $('#menu').css('font-size', 22+'px');$('#menu').css('line-height', 47+'px');
+        $('#menu').css('font-size', 22+'px');$('#menu').css('line-height', 47+'px');
+      }
+      else if(650 <= main_width && main_width < 850){
+        $('#menu').css('font-size', 18+'px');$('#menu').css('line-height', 38+'px');
+        $('#menu').css('font-size', 18+'px');$('#menu').css('line-height', 38+'px');
+      }
+      else if(500 <= main_width && main_width < 650){
+        $('#menu').css('font-size', 12+'px');$('#menu').css('line-height', 25+'px');
+        $('#menu').css('font-size', 12+'px');$('#menu').css('line-height', 25+'px');
+      }
+      else if(main_width < 500){
+        $('#menu').css('font-size', 8+'px');$('#menu').css('line-height', 20+'px');
+        $('#menu').css('font-size', 8+'px');$('#menu').css('line-height', 20+'px');
+      }
+      else if(1100 <= main_width){
+        $('#menu').css('font-size', 32+'px');$('#menu').css('line-height', 68+'px');
+        $('#menu').css('font-size', 32+'px');$('#menu').css('line-height', 68+'px');
+      }
+    }
+    </script>
+    <style>
+      #menu {
+        /* ▼表示位置を画面の右下に固定 */
+        position: absolute; /* ←表示場所を固定 */
+        top: 50%;   /* ←下端からの距離 */
+      /*  top: 446px;*/
+        /*right: 200px;*/    /* ←右端からの距離 */
+        left: 25%;
+        background-color:black;
+        opacity: 0;             /* ←透明度 */
+        padding: 4px;
+        /*padding-right: 80px;*/
+        width: 50%;
+        color: #fff;
+        height: auto;
+        line-height: 60px;
+        text-align: left;
+        display: inline-block;
+        border-radius: 2%;
+        font-size: 28px;
+        border: 2px solid #fff;
+      }
+      #kansyu {
+        /* ▼表示位置を画面の右下に固定 */
+        position: absolute; /* ←表示場所を固定 */
+        bottom: 1%;   /* ←下端からの距離 */
+      /*  top: 446px;*/
+        /*right: 200px;*/    /* ←右端からの距離 */
+        right: 1%;
+        background-color:black;
+        opacity: 0;             /* ←透明度 */
+        /*padding-right: 80px;*/
+        width: 50%;
+        color: #fff;
+        height: auto;
+        text-align: left;
+        display: inline-block;
+      }
+      .logo{
+        animation-duration: 7s;  /* アニメーション時間 */
+        animation-name: slidein;  /* アニメーション名 */
+      }
+      /* ▼アニメーション名「slidein」の動作内容 */
+      @keyframes slidein {
+        from {
+          margin-top: 98%;
+        }
+        to {
+          margin-top: 0%;
+        }
+      }
+      .caution{
+        position: absolute;
+        z-index: 10;
+        top:0;
+        right: 0;
+        left: 0;
+        bottom: 0;
+        background-color: #000;
+        cursor:pointer;
+      }
+      .caution_main{
+        position: absolute;
+        top:25%;
+        left:25%;
+        height: auto;
+        width: 50%;
+        color: #fff;
+        text-align: center;
+      }
+      /* 点滅 */
+      .blinking{
+      	-webkit-animation:blink 1s ease-in-out infinite alternate;
+          -moz-animation:blink 1s ease-in-out infinite alternate;
+          animation:blink 1s ease-in-out infinite alternate;
+      }
+      @-webkit-keyframes blink{
+          0% {opacity:0;}
+          100% {opacity:1;}
+      }
+      @-moz-keyframes blink{
+          0% {opacity:0;}
+          100% {opacity:1;}
+      }
+      @keyframes blink{
+          0% {opacity:0;}
+          100% {opacity:1;}
+      }
+    </style>
+    <?php include "loading.php"; ?>
+  </head>
+  <body>
+    <!--<audio id="op_bgm" src="op_bgm.mp3"></audio>-->
+    <div id="fade"></div>
+    <div class="main" id="main">
+      <div id="loader"><img src="img/loading.gif"style="width: 100%;"alt="Now Loading..." /></div>
+      <div id="sign-in" class="ani2" style="opacity: 0;float:right;"><a style="float:right;" href="login.html">再サインイン　　</a><div style="float:right;" id="user_id_div"></div><div style="float:right;" id="messe"></div></div>
+      <div style="text-align:center;padding-top:10%;">
+        <img id="logo" style="width:60%;margin-top: 0%;" src="img/logo.png">
+      </div>
+      <div id="menu" class="boxContainer">
+        <ul style="list-style: none;padding:0;margin-left:20px;margin-right:20px;"  class="box">
+          <li id="menu_1">▶</li>
+          <li id="menu_2">　</li>
+          <li id="menu_3">　</li>
+        </ul>
+        <ul style="list-style: none;padding:0;"  class="box">
+          <li>ぼうけんをはじめる</li>
+          <li>たびのつづきをする</li>
+          <li>せんもんかモードではじめる</li>
+        </ul>
+        <ul style="display: none;">
+          <li id="menu_1_li"></li>
+          <li id="menu_2_li"></li>
+          <li id="menu_3_li"></li>
+        </ul>
+      </div>
+      <div class="ani2" id="kansyu">
+        <ul style="list-style: none;padding:0;width:auto;">
+        </ul>
+      </div>
+      <div class="ani2" style="opacity: 0;">
+        <p id="a_btn" onMouseDown="a_start();" onMouseUp="a_stop();" onmouseout="a_stop();" ontouchend="a_stop();">○</p>
+        <p id="b_btn" onMouseDown="b_start();" onMouseUp="b_stop();" onmouseout="b_stop();" ontouchend="b_stop();">×</p>
+        <p id="u_btn" onMouseDown="u_start();" onMouseUp="u_stop();" onmouseout="u_stop();" ontouchend="u_stop();">▲</p>
+        <p id="d_btn" onMouseDown="d_start();" onMouseUp="d_stop();" onmouseout="d_stop();" ontouchend="d_stop();">▼</p>
+        <p id="r_btn" onMouseDown="r_start();" onMouseUp="r_stop();" onmouseout="r_stop();" ontouchend="r_stop();">▶</p>
+        <p id="l_btn" onMouseDown="l_start();" onMouseUp="l_stop();" onmouseout="l_stop();" ontouchend="l_stop();">◀</p>
+      </div>
+    </div>
+    <div id="caution" class="caution">
+      <div id="caution" class="caution_main">
+        <h2>ものがたり</h2>
+        <p style="text-align:center;">
+          これは タマキという ちいさな まちの ものがたり。<br>
+          タマキチョウは　1955ねんに　タマルチョウ<br>
+          ヒガシトキダムラ　ウダムラが　がっぺいして　たんじょうした。<br>
+          そしてよくねん　シモトキダムラが　へんにゅうし<br>
+          げんざいのすがたになった。　げんざいは　やく　1まん5000にん　の　ひとたちが　くらしている。<br>
+          じゅうみんのなかには　このまちを すごしやすいと かんじている<br>
+          ひともいれば　なやみを　かかえているひとも　いるようだ……。<br>
+          じゅうみんと　はなして　このまちの　げんじょうをしり<br>
+          じゅうみんを　たすけよう！
+        </p><br /><br />
+        <h2 class="blinking">がめんをタッチしてください</h2>
+      </div>
+    </div>
+    <div class="ani2" style="opacity: 0;position:fixed;top:20px;right:10px;">
+      <img onclick="javascript:mo_on()" id="mo_icon" src="img/mobile_icon.png" width="50px"height="50px" style="display: none;">
+      <img onclick="javascript:pc_on()" id="pc_icon" src="img/pc_icon.png" width="50px"height="50px;" style="display:none;">
+    </div>
+    <?php include "audio.php"; ?>
+    <script type="text/javascript" src="js/wa.js"></script>
+    <script>
+
+
+      function ani(){
+        $('#menu').css('opacity', 1);
+        setTimeout(ani2, 1000);
+      }
+      function ani2(){
+        $('.ani2').css('opacity', 1);
+      }
+      var myAudio = new Audio('');
+      var tap = 0;
+      ;(function(wa){
+        //$('#caution').on('click', function(){
+        var event = "click";
+        document.addEventListener(event, function() {
+          if (tap == 0){
+            var audio_file_name = 'op_bgm';
+            $('#caution').delay(300).fadeOut(400);
+
+            document.getElementById('logo').classList.add('logo');
+            setTimeout(ani, 7250);
+
+            wa.playSilent();
+
+            tap = 1;
+            audio_play(audio_file_name);
+            setTimeout(op_loop,64000);
+          }
+        });
+      }(wa));
+      function op_loop(){
+        audio_file_name = 'op_bgm';
+        audio_play(audio_file_name);
+        setTimeout(op_loop,64000);
+      }
+
+
+        // ローカルストレージが使えるかチェック
+    	if (!window.localStorage){
+    		document.getElementById("messe").innerHTML = "ローカルストレージが使用出来ません";
+    	}
+      var db_user_id = window.localStorage.getItem("user_id");
+      var user_id;
+      if(0 == <?php echo $user_id; ?>){
+        if (db_user_id == null){
+          user_id = <?php echo $timestamp; ?>;
+          window.localStorage.setItem("user_id", user_id);
+        }else{
+          user_id = db_user_id;
+        }
+      }else{
+        user_id = <?php echo $user_id; ?>;
+        if (db_user_id == null || db_user_id != user_id){
+          window.localStorage.setItem("user_id", user_id);
+        }
+      }
+      document.getElementById("menu_1_li").innerHTML = "<a type=\"button\" id=\"menu_1_a\" href=\"syujinkou/index.html?user_id=" + user_id + "\">syujinkou</a>";
+      document.getElementById("menu_2_li").innerHTML = "<a type=\"button\" id=\"menu_2_a\" href=\"continue/index.html?user_id=" + user_id + "\">continue</a>";
+      document.getElementById("menu_3_li").innerHTML = "<a type=\"button\" id=\"menu_3_a\" href=\"professional/index.html?user_id=" + user_id + "\">professional</a>";
+      document.getElementById("user_id_div").innerHTML =  "id：" + user_id + "　　";
+    </script>
+    <script>
+    //----------------------------------------------------------------------------------- 操作ボタン表示・非表示
+    function mo_on(){
+      document.getElementById("mo_icon").style.display ="none";
+      document.getElementById("pc_icon").style.display ="block";
+      document.getElementById("a_btn").style.display ="block";
+      document.getElementById("b_btn").style.display ="block";
+      document.getElementById("u_btn").style.display ="block";
+      document.getElementById("d_btn").style.display ="block";
+      document.getElementById("r_btn").style.display ="block";
+      document.getElementById("l_btn").style.display ="block";
+    }
+    function pc_on(){
+      document.getElementById("pc_icon").style.display ="none";
+      document.getElementById("a_btn").style.display ="none";
+      document.getElementById("b_btn").style.display ="none";
+      document.getElementById("u_btn").style.display ="none";
+      document.getElementById("d_btn").style.display ="none";
+      document.getElementById("r_btn").style.display ="none";
+      document.getElementById("l_btn").style.display ="none";
+      document.getElementById("mo_icon").style.display ="block";
+    }
+    </script>
+    <script>
+      //--------------------------------------------------------------キーボード
+      // キーボードのフラグ　（1 : 押されている / 0 : 離されている）
+      var left  = 0 ;
+      var up    = 0 ;
+      var right = 0 ;
+      var down  = 0 ;
+      var space = 0 ;
+      var Z_key = 0;
+      var X_key = 0;
+    </script>
+    <script>
+      //------------------------------------------------------選択
+      var max = 3;
+      var here = 1;
+
+      if(0 != <?php echo $hero_id; ?>){
+        //document.getElementById("messe").innerHTML = "if内";
+        here = 2;
+        menu_1.innerHTML ='　';
+        menu_2.innerHTML ='▶';
+        menu_3.innerHTML ='　';
+      }
+
+      function menu_select(x){
+        if(x == "up"){
+          if(here == 1){here = max+1;}
+          here = here - 1;
+        }else if(x == "down"){
+          if(here == max){here = 0;}
+          here = here + 1;
+        }else if(x == "ok"){
+          var audio_file_name = 'decide';
+          audio_play(audio_file_name);
+          if(here == 1){
+            //document.location.href = "https://www.yahoo.co.jp";
+            document.getElementById("menu_1_a").click();
+          }else if(here == 2){
+            //document.location.href = "https://www.yahoo.com";
+            document.getElementById("menu_2_a").click();
+          }else if(here == 3){
+            //document.location.href = "https://kids.yahoo.co.jp/";
+            document.getElementById("menu_3_a").click();
+          }
+        }
+        if(here == 1){
+          menu_1.innerHTML ='▶';
+          menu_2.innerHTML ='　';
+          menu_3.innerHTML ='　';
+        }else if(here == 2){
+          menu_1.innerHTML ='　';
+          menu_2.innerHTML ='▶';
+          menu_3.innerHTML ='　';
+        }else if(here == 3){
+          menu_1.innerHTML ='　';
+          menu_2.innerHTML ='　';
+          menu_3.innerHTML ='▶';
+        }
+        setTimeout(menu_select,1000);
+      }
+
+    </script>
+    <?php
+      include 'fun/keydown.php';//キーボードが下がった時
+      include 'fun/keyup.php';//キーボードが上がった時
+      include 'fun/keydisp.php';//キーボードの処理
+    ?>
+    <script language="javascript">
+      document.onkeydown = keydown ; // イベント検出
+      document.onkeyup   = keyup ; // イベント検出
+    </script>
+  </body>
+</html>

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <?php
+      include 'db_config.php';
+      $text = array();
+      if(isset($_GET['q']))
+      {
+        $q = $_GET['q'];
+        try
+        {
+           $db = new PDO(PDO_DSN, DB_USERNAME, DB_PASSWORD);
+           $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+           $stmt = $db->query("SELECT * FROM professional WHERE `explain` LIKE '%$q%'");
+           $text = $stmt->fetchAll(PDO::FETCH_ASSOC);
+           $db = null;
+        }
+        catch(PDOException $e)
+        {
+         echo $e->getMessage();
+         exit;
+        }
+        //print_r($text);
+     }
+
+      else{
+        try
+        {
+           $db = new PDO(PDO_DSN, DB_USERNAME, DB_PASSWORD);
+           $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+           $stmt = $db->query("SELECT * FROM professional");
+           $text = $stmt->fetchAll(PDO::FETCH_ASSOC);
+           $db = null;
+        }
+        catch(PDOException $e)
+        {
+         echo $e->getMessage();
+         exit;
+        }
+      }
+
+      $unkoarray = array();
+
+    ?>
+    <?php include "head.php"; ?>
+    <?php //include "modal.php"; ?>
+    <?php //include “main_deta.php”; ?>
+    <script>
+    function font_size(){
+      //window_show.innerHTML='a:'+'　h'+main_height+'　w'+main_width;
+      //menu
+      if(900 <= main_width && main_width < 1100){
+        $('#menu').css('font-size', 28+'px');$('#menu').css('line-height', 60+'px');
+        $('#kensaku').css('font-size', 26+'px');$('#kensaku').css('line-height', 60+'px');
+
+
+      }
+      else if(850 <= main_width && main_width < 900){
+        $('#menu').css('font-size', 22+'px');$('#menu').css('line-height', 47+'px');
+        $('#kensaku').css('font-size', 22+'px');$('#kensaku').css('line-height', 47+'px');
+
+      }
+      else if(650 <= main_width && main_width < 850){
+        $('#menu').css('font-size', 18+'px');$('#menu').css('line-height', 38+'px');
+        $('#kensaku').css('font-size', 18+'px');$('#kensaku').css('line-height', 38+'px');
+
+      }
+      else if(500 <= main_width && main_width < 650){
+        $('#menu').css('font-size', 12+'px');$('#menu').css('line-height', 25+'px');
+        $('#kensaku').css('font-size', 12+'px');$('#kensaku').css('line-height', 25+'px');
+
+      }
+      else if(main_width < 500){
+        $('#menu').css('font-size', 8+'px');$('#menu').css('line-height', 20+'px');
+        $('#kensaku').css('font-size', 8+'px');$('#kensaku').css('line-height', 20+'px');
+
+      }
+      else if(1100 <= main_width){
+        $('#menu').css('font-size', 32+'px');$('#menu').css('line-height', 68+'px');
+        $('#kensaku').css('font-size', 32+'px');$('#kensaku').css('line-height', 68+'px');
+
+      }
+    }
+    </script>
+    <style>
+      #menu {
+        /* ▼表示位置を画面の右下に固定 */
+        position: absolute; /* ←表示場所を固定 */
+        top: 50%;   /* ←下端からの距離 */
+      /*  top: 446px;*/
+        /*right: 200px;*/    /* ←右端からの距離 */
+        left: 25%;
+        background-color:black;
+        opacity: 1;             /* ←透明度 */
+        padding: 4px;
+        /*padding-right: 80px;*/
+        width: 50%;
+        color: #fff;
+        height: auto;
+        line-height: 60px;
+        text-align: left;
+        display: inline-block;
+        border-radius: 2%;
+        font-size: 28px;
+        border: 2px solid #fff
+      }
+    </style>
+    <?php include "../loading.php"; ?>
+  </head>
+  <body>
+    <div id="fade"></div>
+
+
+    <div class="main" id="main">
+      <div id="loader"><img src="../img/loading.gif" style="width: 100%;"alt="Now Loading..." /></div>
+      <div>
+
+
+
+        <p  style="position:absolute; top:3.3%; right:23%;  font-size: 1.5vw; ">
+          専門家モード  </p>
+          <a class="title-back" href="../index.html">タイトルへ戻る</a>
+
+        <form method="GET" action="index.html" style="margin-top:30px;margin-left:30px;">
+          <input class="kensaku-box" type="text" name="q"/>
+          <button class="my-btn" class="kensaku-box">検索</button>
+        </form>
+
+</div>
+
+      <hr />
+      <div class="scr">
+
+        <ul class="kensaku-ul" id="kensaku" style="margin-top:30px;margin-left:30px;font-size:30px">
+          <?php
+                 $i = 0;
+                 foreach ($text as $r) {
+                   $id = $r['id'];
+                   $image = $r['image'];
+                   $title = $r['title'];
+                   $explain = $r['explain'];
+
+                     echo <<< EOM
+                     <li><a class="modal-syncer " data-target="modal-content-{$i}"> {$title}</a></li>
+
+EOM;
+                    $i += 1;
+                 }
+                 ?>
+
+                 <!--
+          <li><a class="modal-syncer " data-target="modal-content-01"><?php echo $title; ?></a></li>
+          <li><a class="modal-syncer " data-target="modal-content-02"><?php echo $title; ?></a></li>
+          <li><a class="modal-syncer " data-target="modal-content-03">将来に向けての不安</a></li>
+          <li><a class="modal-syncer " data-target="modal-content-04">環境について</a></li>
+          <li><a class="modal-syncer " data-target="modal-content-05">福祉について</a></li>
+          <li><a class="modal-syncer " data-target="modal-content-06">地域の安全</a></li>
+          <li>満足度と重要度の散布図</li>
+          <li>町が好きか</li>
+          <li>町が好きな理由</li>
+          <li>町が嫌いな理由</li>
+          <li>将来の町への居住意向</li>
+          <li>自動車の所有</li>
+          <li>一ヶ月あたりの収入</li>
+          <li>卒業後の進路予定</li>-->
+
+
+        </ul>
+      </div>
+
+
+
+
+
+      <div style="display:none;">
+        <p id="a_btn" onMouseDown="a_start();" onMouseUp="a_stop();" onmouseout="a_stop();" ontouchend="a_stop();">○</p>
+        <p id="b_btn" onMouseDown="b_start();" onMouseUp="b_stop();" onmouseout="b_stop();" ontouchend="b_stop();">×</p>
+        <p id="u_btn" onMouseDown="u_start();" onMouseUp="u_stop();" onmouseout="u_stop();" ontouchend="u_stop();">▲</p>
+        <p id="d_btn" onMouseDown="d_start();" onMouseUp="d_stop();" onmouseout="d_stop();" ontouchend="d_stop();">▼</p>
+        <p id="r_btn" onMouseDown="r_start();" onMouseUp="r_stop();" onmouseout="r_stop();" ontouchend="r_stop();">▶</p>
+        <p id="l_btn" onMouseDown="l_start();" onMouseUp="l_stop();" onmouseout="l_stop();" ontouchend="l_stop();">◀</p>
+      </div>
+    </div>
+
+    <?php
+           $i = 0;
+           foreach ($text as $r) {
+             $id = $r['id'];
+             $image = $r['image'];
+             $title = $r['title'];
+             $explain = $r['explain'];
+
+               echo <<< EOM
+
+               <!-- 1つ目のコンテンツ [開始] -->
+               <div id="modal-content-{$i}" class="modal_content">
+                <!-- モーダルウィンドウのコンテンツ開始 -->
+               <img class="image" src="{$image}">
+               <p class="finish">「閉じる」か「背景」をクリックすると終了します。</p>
+
+                <p><a id="modal-close"  class="button-link">閉じる</a></p>
+                <!-- モーダルウィンドウのコンテンツ終了 -->
+               </div>
+               <!-- 1つ目のコンテンツ [終了] -->
+EOM;
+              $i += 1;
+           }
+           ?>
+
+
+    <script>
+      //--------------------------------------------------------------キーボード
+      // キーボードのフラグ　（1 : 押されている / 0 : 離されている）
+      var left  = 0 ;
+      var up    = 0 ;
+      var right = 0 ;
+      var down  = 0 ;
+      var space = 0 ;
+      var Z_key = 0;
+      var X_key = 0;
+    </script>
+    <script>
+      //------------------------------------------------------選択
+      var max=3;
+      var here=1;
+/*
+      function menu_select(x){
+        if(x == "up"){
+          if(here == 1){here = max+1;}
+          here = here - 1;
+        }else if(x == "down"){
+          if(here == max){here = 0;}
+          here = here + 1;
+        }else if(x == "ok"){
+          if(here == 1){
+            //document.location.href = "https://www.yahoo.co.jp";
+            document.getElementById("menu_1_a").click();
+          }else if(here == 2){
+            //document.location.href = "https://www.yahoo.com";
+            document.getElementById("menu_2_a").click();
+          }else if(here == 3){
+            //document.location.href = "https://kids.yahoo.co.jp/";
+            document.getElementById("menu_3_a").click();
+          }
+        }
+        if(here == 1){
+          menu_1.innerHTML ='▶';
+          menu_2.innerHTML ='　';
+          menu_3.innerHTML ='　';
+        }else if(here == 2){
+          menu_1.innerHTML ='　';
+          menu_2.innerHTML ='▶';
+          menu_3.innerHTML ='　';
+        }else if(here == 3){
+          menu_1.innerHTML ='　';
+          menu_2.innerHTML ='　';
+          menu_3.innerHTML ='▶';
+        }
+        setTimeout(menu_select,1000);
+      }
+*/
+    </script>
+    <!--
+    <?php
+      include 'fun/keydown.php';//キーボードが下がった時
+      include 'fun/keyup.php';//キーボードが上がった時
+      include 'fun/keydisp.php';//キーボードの処理
+    ?>
+    <script language="javascript">
+      document.onkeydown = keydown ; // イベント検出
+      document.onkeyup   = keyup ; // イベント検出
+    -->
+    </script>
+
+
+    <!-- JavaScriptの読み込み -->
+<script src="index.js" type="text/javascript"></script>
+    <script src="index.js" type="text/javascript"></script>
+  </body>
+</html>

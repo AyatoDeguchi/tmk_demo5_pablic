@@ -1,0 +1,119 @@
+<?php
+  include 'db_config.php';
+
+  $msg = ""; // エラーメッセージなどを出力する用の変数
+  $is_logined = false; // ログインが成功したか否かのフラグ
+  $users = array();
+
+
+
+  $user_id = $_POST['user_id'];
+
+
+  /* ----------------------------
+   * 入力された値のチェック
+   * empty() : 変数が空か否かを検査する
+   *           空ならfalse/空でなければtrue を返す
+   * ----------------------------*/
+  if(empty($user_id))
+  {
+    $msg = "ユーザーIDが未入力です";
+  }
+
+  // 入力値とDBとの照合
+  if(!empty($user_id))
+  {
+    try
+    {
+       // connect
+       $db = new PDO(PDO_DSN, DB_USERNAME, DB_PASSWORD);
+       $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+       $stmt = $db->query("SELECT * FROM `users` WHERE `user_id`= {$user_id}");
+       $users = $stmt->fetch(PDO::FETCH_ASSOC);
+       //print_r($users);
+
+
+       if(!empty($users))
+       {
+         // ログイン成功のとき
+         $msg = "ようこそ {$users['user_id']} さん！";
+         $is_logined = true;
+         $last_hero_id = $users['last_hero_id'];
+
+       }
+       else
+       {
+         // ログイン失敗のとき
+         $msg = "ユーザーIDが違います";
+       }
+
+       $db = null;
+    }
+    catch(PDOException $e)
+    {
+     echo $e->getMessage();
+     exit;
+    }
+  }
+?>
+
+
+<!DOCTYPE html>
+<html lang="jp" dir="ltr">
+  <head>
+    <?php include "head.php"; ?>
+
+    <style>
+    .title-back{
+    position: absolute;
+    top:4.5%;
+    right: 4%;
+    color: yellow ;
+    text-align: center;
+    text-decoration: none;
+    background-color: #000;
+    border-style: solid;
+    padding: 0.5%;
+    font-size: 1.2vw;
+    }
+    .title-back:hover {
+    	cursor: pointer ;
+    	color: #868A08 ;
+    }
+    </style>
+
+  </head>
+  <body>
+    <div class="main" id="main">
+    <a class="title-back" href="index.html">タイトル画面へ戻る</a>
+    <br /><br /><br /><br />
+    <?php
+      if($is_logined == true)
+      {
+        echo "<br />";
+        echo "<div style='text-align:center;'>";
+        echo "<h2>ログインしました</h2>";
+        echo "<br /><br />";
+        echo "{$msg}<br>";
+        echo "<meta http-equiv=\"refresh\" content=\"1;URL=index.html?user_id={$user_id}&hero_id={$last_hero_id}\">";
+        echo "</div>";
+      }
+      else
+      {
+        echo "<div style='text-align:center;'>";
+        echo "<h2>ログイン</h2>";
+        echo <<< EOM
+        <br /><br />
+            <form action="login-result.html" method="post">
+                ID: <input name="user_id" type="number" style="font-size:24px;"><br>
+                <div style="margin-left:400px;"><button type="submit">ログイン</button></div>
+            </form>
+EOM;
+        echo $msg;
+        echo "</div>";
+      }
+    ?>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <?php
+      include 'db_config.php';
+      $text = array();
+        try
+        {
+           $db = new PDO(PDO_DSN, DB_USERNAME, DB_PASSWORD);
+           $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+           $stmt = $db->query("SELECT * FROM professional");
+           $text = $stmt->fetchAll(PDO::FETCH_ASSOC);
+           $db = null;
+        }
+        catch(PDOException $e)
+        {
+         echo $e->getMessage();
+         exit;
+        }
+    ?>
+    <?php include "head.php"; ?>
+    <?php //include "modal.php"; ?>
+    <?php //include “main_deta.php”; ?>
+    <script>
+    function font_size(){
+      if(900 <= main_width && main_width < 1100){
+        $('#menu').css('font-size', 28+'px');$('#menu').css('line-height', 60+'px');
+        $('#kensaku').css('font-size', 26+'px');$('#kensaku').css('line-height', 60+'px');
+      }
+      else if(850 <= main_width && main_width < 900){
+        $('#menu').css('font-size', 22+'px');$('#menu').css('line-height', 47+'px');
+        $('#kensaku').css('font-size', 22+'px');$('#kensaku').css('line-height', 47+'px');
+
+      }
+      else if(650 <= main_width && main_width < 850){
+        $('#menu').css('font-size', 18+'px');$('#menu').css('line-height', 38+'px');
+        $('#kensaku').css('font-size', 18+'px');$('#kensaku').css('line-height', 38+'px');
+
+      }
+      else if(500 <= main_width && main_width < 650){
+        $('#menu').css('font-size', 12+'px');$('#menu').css('line-height', 25+'px');
+        $('#kensaku').css('font-size', 12+'px');$('#kensaku').css('line-height', 25+'px');
+
+      }
+      else if(main_width < 500){
+        $('#menu').css('font-size', 8+'px');$('#menu').css('line-height', 20+'px');
+        $('#kensaku').css('font-size', 8+'px');$('#kensaku').css('line-height', 20+'px');
+
+      }
+      else if(1100 <= main_width){
+        $('#menu').css('font-size', 32+'px');$('#menu').css('line-height', 68+'px');
+        $('#kensaku').css('font-size', 32+'px');$('#kensaku').css('line-height', 68+'px');
+
+      }
+    }
+    </script>
+    <style>
+      #menu {
+        position: absolute;
+        top: 50%;
+        left: 25%;
+        background-color:black;
+        opacity: 1;             /* ←透明度 */
+        padding: 4px;
+        width: 50%;
+        color: #fff;
+        height: auto;
+        line-height: 60px;
+        text-align: left;
+        display: inline-block;
+        border-radius: 2%;
+        font-size: 28px;
+        border: 2px solid #fff
+      }
+    </style>
+    <?php include "../loading.php"; ?>
+  </head>
+  <body>
+    <div id="fade"></div>
+    <div class="main" id="main">
+      <div id="loader"><img src="../img/loading.gif" style="width: 100%;"alt="Now Loading..." /></div>
+        <div>
+          <p  style="position:absolute; top:3.3%; right:23%;  font-size: 1.5vw; ">
+            専門家モード  </p>
+            <a class="title-back" href="../index.html">タイトルへ戻る</a>
+            <input id="kensaku-text" class="kensaku-box" type="text" style="margin-top:30px;margin-left:30px;" name="q"/>
+            <button id="kensaku-btn" class="my-btn">検索</button>
+          </form>
+        </div>
+        <hr />
+      <div id="list" class="scr">
+        <ul class="kensaku-ul" id="kensaku" style="margin-top:30px;margin-left:30px;font-size:30px">
+          <?php
+                 $i = 0;
+                 foreach ($text as $r) {
+                   $id = $r['id'];
+                   $image = $r['image'];
+                   $title = $r['title'];
+                   $explain = $r['explain'];
+
+                     echo <<< EOM
+                     <li><a class="modal-syncer " data-target="modal-content-{$i}"> {$title}</a></li>
+
+EOM;
+                    $i += 1;
+                 }
+                 ?>
+        </ul>
+      </div>
+    </div>
+    <div id="modal_pro">
+      <?php
+             $i = 0;
+             foreach ($text as $r) {
+               $id = $r['id'];
+               $image = $r['image'];
+               $title = $r['title'];
+               $explain = $r['explain'];
+                 echo <<< EOM
+                 <!-- 1つ目のコンテンツ [開始] -->
+                 <div style="width:70%;" id="modal-content-{$i}" class="modal_content">
+                  <!-- モーダルウィンドウのコンテンツ開始 -->
+                 <img class="image" src="{$image}">
+                 <p class="finish">「閉じる」か「背景」をクリックすると終了します。</p>
+                  <p><a id="modal-close"  class="button-link">閉じる</a></p>
+                  <!-- モーダルウィンドウのコンテンツ終了 -->
+                 </div>
+                 <!-- 1つ目のコンテンツ [終了] -->
+EOM;
+                $i += 1;
+             }
+             ?>
+    </div>
+    <script src="index.js" type="text/javascript"></script>
+    <script>
+      document.getElementById("kensaku-btn").onclick = function() {
+        var text = document.getElementById("kensaku-text").value;
+        console.log(text);
+        var parameter = {"q": text};
+        exePHPFunc_pro(parameter).done(function(data_pro){
+          console.log(data_pro);
+          //data_status = JSON.parse(data_status);
+          list.innerHTML = data_pro;
+          modal_js();
+          font_size();
+        });
+        exePHPFunc_pro2(parameter).done(function(data_pro2){
+          console.log(data_pro2);
+          //data_status = JSON.parse(data_status);
+          modal_pro.innerHTML = data_pro2;
+          modal_js();
+        });
+      }
+      function exePHPFunc_pro(parameter)
+      {
+      	var defer = $.Deferred();
+      	$.ajax({
+      		url: "professional_ajax.php",
+      		type: "POST",
+      		data: parameter,
+      		scriptCharset: 'utf-8',
+      		success: defer.resolve,
+      	});
+      	return defer.promise();
+      }
+      function exePHPFunc_pro2(parameter)
+      {
+      	var defer = $.Deferred();
+      	$.ajax({
+      		url: "professional_ajax2.php",
+      		type: "POST",
+      		data: parameter,
+      		scriptCharset: 'utf-8',
+      		success: defer.resolve,
+      	});
+      	return defer.promise();
+      }
+      function modal_js(){
+
+      //グローバル変数
+      var nowModalSyncer = null ;		//現在開かれているモーダルコンテンツ
+      var modalClassSyncer = "modal-syncer" ;		//モーダルを開くリンクに付けるクラス名
+
+      //モーダルのリンクを取得する
+      var modals = document.getElementsByClassName( modalClassSyncer ) ;
+
+      //モーダルウィンドウを出現させるクリックイベント
+      for(var i=0,l=modals.length; l>i; i++){
+
+      	//全てのリンクにタッチイベントを設定する
+      	modals[i].onclick = function(){
+
+      		//ボタンからフォーカスを外す
+      		this.blur() ;
+
+      		//ターゲットとなるコンテンツを確認
+      		var target = this.getAttribute( "data-target" ) ;
+
+      		//ターゲットが存在しなければ終了
+      		if( typeof( target )=="undefined" || !target || target==null ){
+      			return false ;
+      		}
+
+      		//コンテンツとなる要素を取得
+      		nowModalSyncer = document.getElementById( target ) ;
+
+      		//ターゲットが存在しなければ終了
+      		if( nowModalSyncer == null ){
+      			return false ;
+      		}
+
+      		//キーボード操作などにより、オーバーレイが多重起動するのを防止する
+      		if( $( "#modal-overlay" )[0] ) return false ;		//新しくモーダルウィンドウを起動しない
+      		//if($("#modal-overlay")[0]) $("#modal-overlay").remove() ;		//現在のモーダルウィンドウを削除して新しく起動する
+
+      		//オーバーレイを出現させる
+      		$( "body" ).append( '<div id="modal-overlay"></div>' ) ;
+      		$( "#modal-overlay" ).fadeIn( "fast" ) ;
+
+      		//コンテンツをセンタリングする
+      		centeringModalSyncer() ;
+
+      		//コンテンツをフェードインする
+      		$( nowModalSyncer ).fadeIn( "slow" ) ;
+
+      		//[#modal-overlay]、または[#modal-close]をクリックしたら…
+      		$( "#modal-overlay,#modal-close" ).unbind().click( function() {
+
+      			//[#modal-content]と[#modal-overlay]をフェードアウトした後に…
+      			$( "#" + target + ",#modal-overlay" ).fadeOut( "fast" , function() {
+
+      				//[#modal-overlay]を削除する
+      				$( '#modal-overlay' ).remove() ;
+
+      			} ) ;
+
+      			//現在のコンテンツ情報を削除
+      			nowModalSyncer = null ;
+
+      		} ) ;
+
+      	}
+        //リサイズされたら、センタリングをする関数[centeringModalSyncer()]を実行する
+      	$( window ).resize( centeringModalSyncer ) ;
+
+      	//センタリングを実行する関数
+      	function centeringModalSyncer() {
+
+      		//モーダルウィンドウが開いてなければ終了
+      		if( nowModalSyncer == null ) return false ;
+
+      		//画面(ウィンドウ)の幅、高さを取得
+      		var w = $( window ).width() ;
+      		var h = $( window ).height() ;
+
+      		//コンテンツ(#modal-content)の幅、高さを取得
+      		// jQueryのバージョンによっては、引数[{margin:true}]を指定した時、不具合を起こします。
+      //		var cw = $( nowModalSyncer ).outerWidth( {margin:true} ) ;
+      //		var ch = $( nowModalSyncer ).outerHeight( {margin:true} ) ;
+      		var cw = $( nowModalSyncer ).outerWidth() ;
+      		var ch = $( nowModalSyncer ).outerHeight() ;
+
+      		//センタリングを実行する
+      		$( nowModalSyncer ).css( {"left": ((w - cw)/2) + "px","top": ((h - ch)/2) + "px"} ) ;
+
+      	}
+      }
+      console.log('aaaaaaaaaaaaaaaaaaaaaaaaa');
+      }
+    </script>
+  </body>
+</html>

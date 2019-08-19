@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <?php include "head.php"; ?>
+    <?php
+      include '../db_config.php';
+
+      $is_logined = false; // ログインが成功したか否かのフラグ
+      $users = array();
+      $db_hero = array();
+      $hero_name;
+      $par = 0;
+      $no_par =0;
+
+      if(isset($_GET['user_id'])){
+        $user_id = $_GET['user_id'];
+        // 入力値とDBとの照合
+        if(!empty($user_id))
+        {
+          try
+          {
+             // connect
+             $db = new PDO(PDO_DSN, DB_USERNAME, DB_PASSWORD);
+             $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+             $stmt = $db->query("SELECT * FROM `users` WHERE `user_id`= {$user_id}");
+             $users = $stmt->fetch(PDO::FETCH_ASSOC);
+             //print_r($users);
+
+
+             if(!empty($users))
+             {
+               $timestamp = time();
+               $db->query("UPDATE `users` SET `start_time`={$timestamp} WHERE `user_id`={$user_id}");
+               $is_logined = true;
+               $last_hero_id = $users['last_hero_id'];
+
+               $stmt = $db->query("SELECT * FROM `hero` WHERE `id`= {$last_hero_id}");
+               $db_hero = $stmt->fetch(PDO::FETCH_ASSOC);
+
+               $hero_talk_num = $db_hero['hero_talk_num'];
+               $hero_name = $db_hero['name'];
+
+               $continue_id = $user_id * 10 + $last_hero_id;
+
+               $stmt = $db->query("SELECT * FROM `continue` WHERE `continue_id`= {$continue_id}");
+               $db_continue = $stmt->fetch(PDO::FETCH_ASSOC);
+
+               $sum = 0;
+
+               //print_r($db_continue);
+               for($i = 1;$i <= $hero_talk_num +3;$i++){
+                 list( $key, $value ) = each( $db_continue );
+                 /*
+                 echo 'key : '.$key;
+                 echo ' value : '.$value;
+                 echo '<br>';*/
+                 if($key == 'id' || $key == 'user_id' || $key == 'continue_id'){
+
+                 }else{
+                   $sum = $sum + $value;
+                 }
+               }
+               //echo $sum;
+               $par = ($sum/$hero_talk_num)*100;
+               $no_par = 100 - $par;
+               //echo $no_par;
+             }
+             else
+             {
+               echo "<meta http-equiv=\"refresh\" content=\"0;URL=../index.html\">";
+             }
+
+             $db = null;
+          }
+          catch(PDOException $e)
+          {
+           echo $e->getMessage();
+           exit;
+          }
+        }
+        echo "<meta http-equiv=\"refresh\" content=\"3;URL=../map/index.html?user_id={$user_id}&hero_id={$last_hero_id}\">";
+      }else{
+        //$user_id = 0;
+        echo "<meta http-equiv=\"refresh\" content=\"0;URL=../index.html\">";
+      }
+
+    ?>
+    <title>主人公選択</title>
+    <script>
+    function font_size(){
+      //window_show.innerHTML='a:'+'　h'+main_height+'　w'+main_width;
+      //menu
+      if(990 <= main_width && main_width < 1100){
+        $('#title').css('font-size', 41+'px');$('#title').css('line-height', 60+'px');
+      }
+      else if(850 <= main_width && main_width < 990){
+        $('#title').css('font-size', 35+'px');$('#title').css('line-height', 47+'px');
+      }
+      else if(650 <= main_width && main_width < 850){
+        $('#title').css('font-size', 31+'px');$('#title').css('line-height', 38+'px');
+      }
+      else if(500 <= main_width && main_width < 650){
+        $('#title').css('font-size', 25+'px');$('#title').css('line-height', 25+'px');
+      }
+      else if(main_width < 500){
+        $('#title').css('font-size', 21+'px');$('#title').css('line-height', 20+'px');
+      }
+      else if(1100 <= main_width){
+        $('#title').css('font-size', 45+'px');$('#title').css('line-height', 68+'px');
+      }
+    }
+    </script>
+    <?php include "../loading.php"; ?>
+
+  </head>
+  <body>
+    <div id="fade"></div>
+    <div class="main" id="main" style="/*display:none;*/">
+      <div id="loader"><img src="../img/loading.gif" style="width: 100%;"alt="Now Loading..." /></div>
+      <!-- ページのタイトル表示 -->
+        <p id="title" style="margin-left: 10px;margin-top: 20px;font-size:45px;">現在の住民との会話 達成率　<?php echo $hero_name; ?></p>
+        <div>
+          <div style="position:absolute; top:0%;right:0px;bottom:0px;left:0px;margin:auto; width:500px; height:50px; font-size:25px;">MAP画面 の 「じぶんのステータス」から<br>ご確認ください。</div>
+          <canvas  id="myChart" style="position:absolute; top:20%;right:0px;bottom:0px;left:0px;background-color:#000;"></canvas>
+        </div>
+
+    </div>
+  </body>
+  <script>
+    //--------------------------------------------------------------グラフ
+    var ctx = document.getElementById("myChart").getContext("2d");
+    var myBarChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+        labels: ["クリア","未達成"],
+        datasets: [{
+            label: '%',
+            data: [<?php echo $par; ?>,<?php echo $no_par; ?>],
+            backgroundColor:
+                ['rgba(255, 0, 235, 0.8)','rgba(255, 197, 0, 0.6)'],
+            borderColor:['rgba(255, 0, 235, 1)','rgba(255, 197, 0, 1)'],
+            borderWidth: 1
+        }]
+    },
+    });
+    <?php $user_id = $_GET['user_id']; ?>
+    var user = <?php echo $user_id;?>;
+    var parameter = {"user_id": user};
+    exePHPFunc_starttime(parameter).done(function(start_playtime){
+      console.log(start_playtime);
+    });
+    function exePHPFunc_starttime(parameter)
+    {
+      var defer = $.Deferred();
+
+      $.ajax({
+        url: "../starttime_ajax.php",
+        type: "POST",
+        data: parameter,
+        scriptCharset: 'utf-8',
+        success: defer.resolve,
+      });
+      return defer.promise();
+    }
+  </script>
+</html>

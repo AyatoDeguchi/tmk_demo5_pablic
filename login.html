@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="jp" dir="ltr">
+  <head>
+    <?php include "head.php"; ?>
+    <style>
+    .title-back{
+    position: absolute;
+    top:4.5%;
+    right: 4%;
+    color: yellow ;
+    text-align: center;
+    text-decoration: none;
+    background-color: #000;
+    border-style: solid;
+    padding: 0.5%;
+    font-size: 1.2vw;
+    }
+    .title-back:hover {
+    	cursor: pointer ;
+    	color: #868A08 ;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="main" id="main">
+    <a class="title-back" href="index.html">タイトル画面へ戻る</a>
+    <br /><br /><br /><br />
+    <div style="text-align:center;">
+    <h2>ログイン</h2>
+    <br /><br />
+      <form action="login-result.html" method="post">
+          ID: <input name="user_id" type="number" style="font-size:24px;"><br>
+          <div style="margin-left:400px;"><button type="submit">ログイン</button></div>
+      </form>
+    </div>
+    </div>
+  </body>
+</html>
